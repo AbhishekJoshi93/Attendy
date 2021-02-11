@@ -4,9 +4,26 @@ import { View, Text, Image, StyleSheet } from 'react-native'
 
 import { Input, Button } from 'react-native-elements'
 
+import firebase from 'firebase'
+
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const loginHandler = () => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((result) => {
+        console.log('====================================')
+        console.log(result)
+        console.log('====================================')
+        navigation.navigate('Home')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
   return (
     <View style={styles.container}>
@@ -25,8 +42,8 @@ const LoginScreen = ({ navigation }) => {
               color: '#cd8f82',
             }}
             placeholder='Enter Email'
-            onChangeText={(email) => setUsername(email)}
-            value={username}
+            onChangeText={(email) => setEmail(email)}
+            value={email}
             autoFocus={false}
             style={{
               padding: 5,
@@ -75,7 +92,12 @@ const LoginScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('Signup')}
           />
         </View>
-        <Button title='Login' type='outline' raised />
+        <Button
+          title='Login'
+          type='outline'
+          raised
+          onPress={() => loginHandler()}
+        />
       </View>
     </View>
   )
