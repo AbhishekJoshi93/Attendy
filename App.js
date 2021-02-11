@@ -1,21 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react'
 
-export default function App() {
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+
+import AsyncStorage from '@react-native-community/async-storage'
+
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+
+import OnboardingScreen from './screens/OnboardingScreen'
+import LoginScreen from './screens/LoginScreen'
+import SignupScreen from './screens/SignupScreen'
+
+const AppStack = createStackNavigator()
+
+const App = () => {
+  const [isFirst, setIsFirst] = useState(null)
+
+  useEffect(() => {
+    AsyncStorage.getItem('alreadyLaunched').then((value) => {
+      if (value == null) {
+        AsyncStorage.setItem('alreadyLaunched', 'true')
+        setIsFirst(true)
+      } else {
+        setIsFirst(false)
+      }
+    })
+  }, [])
+
+  //   if (isFirst == null) {
+  //   return null
+  // } else if (isFirst == true) {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppStack.Navigator headerMode='none'>
+          <AppStack.Screen name='Onboarding' component={OnboardingScreen} />
+          <AppStack.Screen name='Login' component={LoginScreen} />
+          <AppStack.Screen name='Signup' component={SignupScreen} />
+        </AppStack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+  )
+  // } else {
+  //   return <LoginScreen />
+  // }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App
