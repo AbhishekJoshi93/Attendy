@@ -69,7 +69,15 @@ const App = () => {
 
   function Root() {
     return (
-      <Drawer.Navigator>
+      <Drawer.Navigator
+        drawerStyle={{ backgroundColor: '#cd8f82' }}
+        drawerContentOptions={{
+          activeBackgroundColor: '#f7f6e7',
+          activeTintColor: '#314e52',
+          inactiveTintColor: '#e7e6e1',
+        }}
+        initialRouteName='Home'
+      >
         <Drawer.Screen name='Home' component={HomeScreen} />
         <Drawer.Screen name='Profile' component={ProfileScreen} />
         <Drawer.Screen name='Logout' component={LogoutScreen} />

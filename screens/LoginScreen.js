@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet, Touchable } from 'react-native'
 
 import { Input, Button } from 'react-native-elements'
 
 import firebase from 'firebase'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('')
@@ -75,7 +76,6 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text
             style={{
-              marginTop: '-5%',
               color: '#314e52',
               fontSize: 15,
               textAlign: 'center',
@@ -95,6 +95,27 @@ const LoginScreen = ({ navigation }) => {
           raised
           onPress={() => loginHandler()}
         />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'baseline',
+            flexDirection: 'row',
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              color: 'blue',
+              fontSize: 15,
+              textAlign: 'center',
+            }}
+            onPress={() => {
+              firebase.auth().sendPasswordResetEmail(email)
+            }}
+          >
+            <Text>Forget Password?</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   )

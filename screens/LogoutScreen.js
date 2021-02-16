@@ -1,18 +1,45 @@
 import React, { useEffect } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
-import firebase from 'firebase'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { Card, Button } from 'react-native-elements'
+
+import { logoutUser } from '../redux/actions/userActions'
 
 const LogoutScreen = ({ navigation }) => {
-  useEffect(() => {
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        navigation.navigate('Login')
-      })
-  }, [])
-  return <View></View>
+  const dispatch = useDispatch()
+
+  const logoutHandler = () => {
+    dispatch(logoutUser())
+    navigation.navigate('Login')
+  }
+
+  return (
+    <View style={styles.container}>
+      <Card>
+        <Card.Title>Are you sure to logout ?</Card.Title>
+        <Card.Divider />
+        <View>
+          <Button
+            title='Logout'
+            type='outline'
+            raised
+            onPress={() => logoutHandler()}
+          />
+        </View>
+      </Card>
+    </View>
+  )
 }
 
 export default LogoutScreen
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f7f6e7',
+  },
+})
