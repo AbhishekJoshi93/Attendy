@@ -22,9 +22,6 @@ const SignupScreen = ({ navigation }) => {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((result) => {
-        console.log('====================================')
-        console.log(result)
-        console.log('====================================')
         if (person == 'Teacher') {
           firebase
             .firestore()

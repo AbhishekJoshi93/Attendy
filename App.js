@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 
 import * as firebase from 'firebase'
 
+import { Provider } from 'react-redux'
+import store from './redux/store'
+
 const firebaseConfig = {
   apiKey: 'AIzaSyCp1Hte28pE408Z5PMmJkDWzyoe0rxw1uU',
   authDomain: 'attendy-b9dff.firebaseapp.com',
@@ -18,6 +21,7 @@ if (firebase.apps.length === 0) {
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import { createDrawerNavigator } from '@react-navigation/drawer'
 
 import AsyncStorage from '@react-native-community/async-storage'
 
@@ -27,73 +31,65 @@ import OnboardingScreen from './screens/OnboardingScreen'
 import LoginScreen from './screens/LoginScreen'
 import SignupScreen from './screens/SignupScreen'
 import HomeScreen from './screens/HomeScreen'
+import ProfileScreen from './screens/ProfileScreen'
+import LogoutScreen from './screens/LogoutScreen'
 
 const AppStack = createStackNavigator()
+const Drawer = createDrawerNavigator()
 
 const App = () => {
-  const [isFirst, setIsFirst] = useState(null)
   const [isLogin, setLogin] = useState(false)
 
   useEffect(() => {
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true')
-        setIsFirst(true)
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        setLogin(false)
       } else {
-        setIsFirst(false)
-        firebase.auth().onAuthStateChanged((user) => {
-          if (!user) {
-            setLogin(true)
-          } else {
-            setLogin(false)
-          }
-        })
+        setLogin(true)
       }
     })
   }, [])
 
-  if (isFirst == null) {
-    return null
-  } else if (isFirst == true) {
+  if (!isLogin) {
     return (
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AppStack.Navigator headerMode='none'>
+              <AppStack.Screen name='Onboarding' component={OnboardingScreen} />
+              <AppStack.Screen name='Signup' component={SignupScreen} />
+              <AppStack.Screen name='Login' component={LoginScreen} />
+              <AppStack.Screen name='Root' component={Root} />
+            </AppStack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </Provider>
+    )
+  }
+
+  function Root() {
+    return (
+      <Drawer.Navigator>
+        <Drawer.Screen name='Home' component={HomeScreen} />
+        <Drawer.Screen name='Profile' component={ProfileScreen} />
+        <Drawer.Screen name='Logout' component={LogoutScreen} />
+      </Drawer.Navigator>
+    )
+  }
+
+  return (
+    <Provider store={store}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <AppStack.Navigator headerMode='none' initialRouteName='Onboarding'>
-            <AppStack.Screen name='Onboarding' component={OnboardingScreen} />
+          <AppStack.Navigator headerMode='none'>
+            <AppStack.Screen name='Root' component={Root} />
             <AppStack.Screen name='Signup' component={SignupScreen} />
             <AppStack.Screen name='Login' component={LoginScreen} />
-            <AppStack.Screen name='Home' component={HomeScreen} />
           </AppStack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
-    )
-  } else {
-    if (!isLogin) {
-      return (
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <AppStack.Navigator headerMode='none' initialRouteName='Home'>
-              <AppStack.Screen name='Signup' component={SignupScreen} />
-              <AppStack.Screen name='Home' component={HomeScreen} />
-              <AppStack.Screen name='Login' component={LoginScreen} />
-            </AppStack.Navigator>
-          </NavigationContainer>
-        </SafeAreaProvider>
-      )
-    } else {
-      return (
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <AppStack.Navigator headerMode='none' initialRouteName='Login'>
-              <AppStack.Screen name='Signup' component={SignupScreen} />
-              <AppStack.Screen name='Home' component={HomeScreen} />
-              <AppStack.Screen name='Login' component={LoginScreen} />
-            </AppStack.Navigator>
-          </NavigationContainer>
-        </SafeAreaProvider>
-      )
-    }
-  }
+    </Provider>
+  )
 }
 
 export default App

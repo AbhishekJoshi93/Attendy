@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
     return <Text>Loading</Text>
   }
 
-  return <Text style={{ margin: 50 }}>Name: {loginUser.name}</Text>
+  return <Text style={{ margin: 50 }}>Name: {loginUser.email}</Text>
 }
 
 export default HomeScreen
