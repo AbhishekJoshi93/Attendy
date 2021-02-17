@@ -33,6 +33,9 @@ import SignupScreen from './screens/SignupScreen'
 import HomeScreen from './screens/HomeScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import LogoutScreen from './screens/LogoutScreen'
+import ReportScreen from './screens/ReportScreen'
+import CreateScreen from './screens/CreateScreen'
+import JoinScreen from './screens/JoinScreen'
 
 const AppStack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -79,6 +82,9 @@ const App = () => {
         initialRouteName='Home'
       >
         <Drawer.Screen name='Home' component={HomeScreen} />
+        <Drawer.Screen name='Create Class' component={CreateScreen} />
+        <Drawer.Screen name='Join Class' component={JoinScreen} />
+        <Drawer.Screen name='Attendance Report' component={ReportScreen} />
         <Drawer.Screen name='Profile' component={ProfileScreen} />
         <Drawer.Screen name='Logout' component={LogoutScreen} />
       </Drawer.Navigator>

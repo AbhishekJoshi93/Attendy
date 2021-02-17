@@ -4,7 +4,7 @@ import { View, Text } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../redux/actions/userActions'
 
-const ProfileScreen = ({ navigation }) => {
+const ReportScreen = ({ navigation }) => {
   const dispatch = useDispatch()
 
   const currentUser = useSelector((state) => state.currentUser)
@@ -18,7 +18,7 @@ const ProfileScreen = ({ navigation }) => {
     return <Text>Loading</Text>
   }
 
-  return <Text style={{ margin: 50 }}>ProfileScreen</Text>
+  return <Text style={{ margin: 50 }}>ReportScreen</Text>
 }
 
-export default ProfileScreen
+export default ReportScreen

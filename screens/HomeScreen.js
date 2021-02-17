@@ -11,10 +11,6 @@ const HomeScreen = ({ navigation }) => {
   const currentUser = useSelector((state) => state.currentUser)
   const { loginUser } = currentUser
 
-  console.log('====================================')
-  console.log(loginUser)
-  console.log('====================================')
-
   useEffect(() => {
     dispatch(fetchUser())
   }, [dispatch])

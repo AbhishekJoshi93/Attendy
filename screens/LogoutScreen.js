@@ -17,8 +17,10 @@ const LogoutScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Card>
-        <Card.Title>Are you sure to logout ?</Card.Title>
+      <Card containerStyle={{ backgroundColor: '#e7e6e1' }}>
+        <Card.Title style={{ color: '#314e52' }}>
+          Are you sure to logout ?
+        </Card.Title>
         <Card.Divider />
         <View>
           <Button
