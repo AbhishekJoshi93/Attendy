@@ -1,24 +1,14 @@
-import React, { useEffect } from 'react'
-import { View, Text } from 'react-native'
+import React from 'react'
+import { View } from 'react-native'
 
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchUser } from '../redux/actions/userActions'
+import Header2 from './Header2Component'
 
 const ProfileScreen = ({ navigation }) => {
-  const dispatch = useDispatch()
-
-  const currentUser = useSelector((state) => state.currentUser)
-  const { loginUser } = currentUser
-
-  useEffect(() => {
-    dispatch(fetchUser())
-  }, [dispatch])
-
-  if (loginUser == undefined) {
-    return <Text>Loading</Text>
-  }
-
-  return <Text style={{ margin: 50 }}>ProfileScreen</Text>
+  return (
+    <View style={{ backgroundColor: '#f7f6e7' }}>
+      <Header2 greeting='Profile' />
+    </View>
+  )
 }
 
 export default ProfileScreen

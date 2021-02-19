@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Image, StyleSheet, Alert } from 'react-native'
 
 import { Input, Button, Icon } from 'react-native-elements'
 
@@ -54,7 +54,13 @@ const SignupScreen = ({ navigation }) => {
         navigation.navigate('Login')
       })
       .catch((error) => {
-        console.error(error)
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            Alert.alert('Email already in use !')
+            break
+          default:
+            Alert.alert('Enter again !')
+        }
       })
   }
 
@@ -128,6 +134,8 @@ const SignupScreen = ({ navigation }) => {
             placeholder='Enter Email'
             onChangeText={(email) => setEmail(email)}
             value={email}
+            autoCompleteType='off'
+            autoCorrect={false}
             autoFocus={false}
             style={{
               padding: 5,

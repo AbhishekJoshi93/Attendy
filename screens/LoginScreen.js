@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { View, Text, Image, StyleSheet, Touchable } from 'react-native'
+import { View, Text, Image, StyleSheet, Alert } from 'react-native'
 
 import { Input, Button } from 'react-native-elements'
 
@@ -19,7 +19,16 @@ const LoginScreen = ({ navigation }) => {
         navigation.navigate('Root')
       })
       .catch((error) => {
-        console.error(error)
+        switch (error.code) {
+          case 'auth/user-not-found':
+            Alert.alert('User not found !')
+            break
+          case 'auth/invalid-email':
+            Alert.alert('Enter proper email !')
+            break
+          default:
+            Alert.alert('Invalid credential !')
+        }
       })
   }
 
@@ -42,6 +51,7 @@ const LoginScreen = ({ navigation }) => {
             placeholder='Enter Email'
             onChangeText={(email) => setEmail(email)}
             value={email}
+            autoCompleteType='off'
             autoFocus={false}
             style={{
               padding: 5,
@@ -110,7 +120,18 @@ const LoginScreen = ({ navigation }) => {
               textAlign: 'center',
             }}
             onPress={() => {
-              firebase.auth().sendPasswordResetEmail(email)
+              firebase
+                .auth()
+                .sendPasswordResetEmail(email)
+                .then((result) => {
+                  Alert.alert('Password reset link sent to email !')
+                })
+                .catch((error) => {
+                  switch (error.code) {
+                    default:
+                      Alert.alert('Enter email !')
+                  }
+                })
             }}
           >
             <Text>Forget Password?</Text>
