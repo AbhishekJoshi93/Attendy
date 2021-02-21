@@ -4,8 +4,12 @@ import { Input, Button, Icon } from 'react-native-elements'
 
 import Header2 from './Header2Component'
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../redux/actions/userActions'
+import { Alert } from 'react-native'
 
 const JoinScreen = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -15,6 +19,7 @@ const JoinScreen = ({ navigation }) => {
 
   const [Title, setTitle] = useState('')
   const [Code, setCode] = useState('')
+  const [Id, setId] = useState('')
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -24,7 +29,61 @@ const JoinScreen = ({ navigation }) => {
     return <ActivityIndicator size='large' color='#000000' />
   }
 
-  const joinHandler = () => {}
+  const joinHandler = () => {
+    firebase
+      .firestore()
+      .collection('classes')
+      .where('Code', '==', Code)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setId(doc.id)
+        })
+      })
+      .catch((error) => {
+        Alert.alert('Class cannot found')
+        return
+      })
+    if (Id == '') {
+    }
+    if (Id != '') {
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('class')
+        .doc(Id)
+        .set({
+          Title,
+          Code,
+        })
+        .then((result) => {})
+        .catch((error) => {
+          Alert.alert('Class cannot join')
+          return
+        })
+      firebase
+        .firestore()
+        .collection('classes')
+        .doc(Id)
+        .collection('Student')
+        .doc(firebase.auth().currentUser.uid)
+        .set({
+          Name: `${loginUser.name}`,
+          Email: `${loginUser.email}`,
+        })
+        .then((result) => {
+          Alert.alert(`Class ${Title} joined`)
+          setTitle('')
+          setCode('')
+          navigation.navigate('Home')
+        })
+        .catch((error) => {
+          Alert.alert('Class cannot join')
+          return
+        })
+    }
+  }
 
   return (
     <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
@@ -59,7 +118,7 @@ const JoinScreen = ({ navigation }) => {
             title='Join'
             type='outline'
             raised
-            onPress={() => joinhandler()}
+            onPress={() => joinHandler()}
           />
         </View>
       ) : (

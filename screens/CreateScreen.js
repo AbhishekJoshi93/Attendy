@@ -17,7 +17,7 @@ const CreateScreen = ({ navigation }) => {
   const { loginUser } = currentUser
 
   const [Title, setTitle] = useState('')
-  const [Code, setCode] = useState('')
+  const [Code, setCode] = useState(`${(+new Date()).toString(36).slice(-5)}`)
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -47,7 +47,22 @@ const CreateScreen = ({ navigation }) => {
             Code,
           })
           .then((res) => {
-            Alert.alert(`Class ${Title} created`)
+            firebase
+              .firestore()
+              .collection('classes')
+              .doc(result.id)
+              .collection('Teacher')
+              .doc(firebase.auth().currentUser.uid)
+              .set({
+                Name: `${loginUser.name}`,
+                Email: `${loginUser.email}`,
+              })
+              .then((result) => {
+                Alert.alert(`Class ${Title} created`)
+                setTitle('')
+                setCode(`${(+new Date()).toString(36).slice(-5)}`)
+                navigation.navigate('Home')
+              })
           })
           .catch((err) => {
             Alert.alert('Try again')
@@ -56,9 +71,6 @@ const CreateScreen = ({ navigation }) => {
       .catch((error) => {
         Alert.alert('Class is not created')
       })
-    setTitle('')
-    setCode('')
-    navigation.navigate('Home')
   }
 
   return (
