@@ -17,6 +17,7 @@ const CreateScreen = ({ navigation }) => {
   const { loginUser } = currentUser
 
   const [Title, setTitle] = useState('')
+  const [Des, setDes] = useState('')
   const [Code, setCode] = useState(`${(+new Date()).toString(36).slice(-5)}`)
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const CreateScreen = ({ navigation }) => {
       .collection('class')
       .add({
         Title,
+        Des,
         Code,
       })
       .then((result) => {
@@ -44,6 +46,7 @@ const CreateScreen = ({ navigation }) => {
           .doc(result.id)
           .set({
             Title,
+            Des,
             Code,
           })
           .then((res) => {
@@ -60,6 +63,7 @@ const CreateScreen = ({ navigation }) => {
               .then((result) => {
                 Alert.alert(`Class ${Title} created`)
                 setTitle('')
+                setDes('')
                 setCode(`${(+new Date()).toString(36).slice(-5)}`)
                 navigation.navigate('Home')
               })
@@ -87,6 +91,18 @@ const CreateScreen = ({ navigation }) => {
             placeholder='Enter class title'
             onChangeText={(title) => setTitle(title)}
             value={Title}
+            autoFocus={false}
+            style={{ padding: 5 }}
+          />
+          <Input
+            leftIcon={{
+              type: 'font-awesome',
+              name: 'angellist',
+              color: '#cd8f82',
+            }}
+            placeholder='Enter class description'
+            onChangeText={(des) => setDes(des)}
+            value={Des}
             autoFocus={false}
             style={{ padding: 5 }}
           />

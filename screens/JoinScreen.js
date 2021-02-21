@@ -18,6 +18,7 @@ const JoinScreen = ({ navigation }) => {
   const { loginUser } = currentUser
 
   const [Title, setTitle] = useState('')
+  const [Des, setDes] = useState('')
   const [Code, setCode] = useState('')
   const [Id, setId] = useState('')
 
@@ -38,6 +39,8 @@ const JoinScreen = ({ navigation }) => {
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           setId(doc.id)
+          setTitle(doc.data().Title)
+          setDes(doc.data().Des)
         })
       })
       .catch((error) => {
@@ -55,6 +58,7 @@ const JoinScreen = ({ navigation }) => {
         .doc(Id)
         .set({
           Title,
+          Des,
           Code,
         })
         .then((result) => {})
@@ -75,6 +79,7 @@ const JoinScreen = ({ navigation }) => {
         .then((result) => {
           Alert.alert(`Class ${Title} joined`)
           setTitle('')
+          setDes('')
           setCode('')
           navigation.navigate('Home')
         })
@@ -90,18 +95,6 @@ const JoinScreen = ({ navigation }) => {
       <Header2 greeting='Join Class' />
       {loginUser.person == 'Student' ? (
         <View style={styles.container}>
-          <Input
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'odnoklassniki',
-              color: '#cd8f82',
-            }}
-            placeholder='Enter class title'
-            onChangeText={(title) => setTitle(title)}
-            value={Title}
-            autoFocus={false}
-            style={{ padding: 5 }}
-          />
           <Input
             leftIcon={{
               type: 'font-awesome',

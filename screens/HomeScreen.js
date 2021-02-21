@@ -1,14 +1,123 @@
-import React from 'react'
-import { View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, FlatList, StyleSheet, LogBox } from 'react-native'
 
 import Header from './HeaderComponent'
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+import { ScrollView } from 'react-native'
+import { TouchableOpacity } from 'react-native'
+
 const HomeScreen = ({ navigation }) => {
+  const [Data, setData] = useState([])
+  const [Refresh, setRefresh] = useState(false)
+
+  useEffect(() => {
+    LogBox.ignoreAllLogs()
+    refreshHandler()
+  }, [])
+
+  const refreshHandler = () => {
+    setData([])
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('class')
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          setData((Data) => [...Data, doc.data()])
+        })
+        setRefresh(false)
+      })
+  }
+
   return (
-    <View style={{ backgroundColor: '#f7f6e7' }}>
+    <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
       <Header greeting='Hello' />
+      <View style={{ flex: 5, alignItems: 'flex-start' }}>
+        {Array.isArray(Data) && Data.length ? (
+          <ScrollView>
+            <FlatList
+              data={Data}
+              keyExtractor={(item) => {
+                return item.Code
+              }}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity>
+                    <View style={styles.flatlistContainer} key={item.Code}>
+                      <Text style={styles.textstyleHeader}>{item.Title}</Text>
+                      <Text style={styles.textstyleDes}>{item.Des}</Text>
+                      <View
+                        style={{
+                          alignSelf: 'flex-end',
+                          borderRadius: 25,
+                          backgroundColor: '#314e52',
+                          padding: 10,
+                          marginBottom: -10,
+                        }}
+                      >
+                        <Text style={styles.textstyleCode}>{item.Code}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                )
+              }}
+              refreshing={Refresh}
+              onRefresh={() => refreshHandler()}
+            />
+          </ScrollView>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              margin: 20,
+            }}
+          >
+            <TouchableOpacity onPress={() => refreshHandler()}>
+              <Text
+                style={{
+                  fontSize: 25,
+                  color: '#e7e6e1',
+                  backgroundColor: '#314e52',
+                  borderRadius: 25,
+                  padding: 5,
+                  paddingHorizontal: '10%',
+                }}
+              >
+                No Classes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
     </View>
   )
 }
 
 export default HomeScreen
+
+const styles = StyleSheet.create({
+  flatlistContainer: {
+    flex: 1,
+    backgroundColor: '#e7e6e1',
+    margin: 10,
+    paddingHorizontal: 20,
+    alignItems: 'baseline',
+    borderRadius: 25,
+  },
+  textstyleHeader: {
+    color: '#f2a154',
+    fontSize: 50,
+  },
+  textstyleCode: {
+    color: '#e7e6e1',
+    width: '25%',
+  },
+  textstyleDes: {
+    color: '#314e52',
+    fontSize: 20,
+  },
+})

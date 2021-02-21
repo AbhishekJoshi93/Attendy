@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-import { View, Text, Image, StyleSheet, Alert } from 'react-native'
+import { View, Text, Image, StyleSheet, Alert, LogBox } from 'react-native'
 
 import { Input, Button } from 'react-native-elements'
 
@@ -11,11 +11,17 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  useEffect(() => {
+    LogBox.ignoreAllLogs()
+  }, [])
+
   const loginHandler = () => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((result) => {
+        setEmail('')
+        setPassword('')
         navigation.navigate('Root')
       })
       .catch((error) => {
