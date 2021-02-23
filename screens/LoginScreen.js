@@ -22,7 +22,7 @@ const LoginScreen = ({ navigation }) => {
       .then((result) => {
         setEmail('')
         setPassword('')
-        navigation.navigate('Root')
+        navigation.navigate('Root', { screen: 'Home' })
       })
       .catch((error) => {
         switch (error.code) {

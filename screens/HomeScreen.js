@@ -7,6 +7,8 @@ import firebase from 'firebase'
 import 'firebase/firestore'
 import { ScrollView } from 'react-native'
 import { TouchableOpacity } from 'react-native'
+import { Button } from 'react-native'
+import { Icon } from 'react-native-elements'
 
 const HomeScreen = ({ navigation }) => {
   const [Data, setData] = useState([])
@@ -16,6 +18,10 @@ const HomeScreen = ({ navigation }) => {
     LogBox.ignoreAllLogs()
     refreshHandler()
   }, [])
+
+  const navigationHandler = () => {
+    navigation.navigate('Root2', { screen: 'Class Home' })
+  }
 
   const refreshHandler = () => {
     setData([])
@@ -36,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
       <Header greeting='Hello' />
-      <View style={{ flex: 5, alignItems: 'flex-start' }}>
+      <View style={{ flex: 11, alignItems: 'flex-start' }}>
         {Array.isArray(Data) && Data.length ? (
           <ScrollView>
             <FlatList
@@ -49,17 +55,30 @@ const HomeScreen = ({ navigation }) => {
                   <TouchableOpacity>
                     <View style={styles.flatlistContainer} key={item.Code}>
                       <Text style={styles.textstyleHeader}>{item.Title}</Text>
-                      <Text style={styles.textstyleDes}>{item.Des}</Text>
                       <View
                         style={{
-                          alignSelf: 'flex-end',
-                          borderRadius: 25,
                           backgroundColor: '#314e52',
-                          padding: 10,
-                          marginBottom: -10,
+                          width: '100%',
+                          borderRadius: 25,
                         }}
                       >
-                        <Text style={styles.textstyleCode}>{item.Code}</Text>
+                        <Text style={styles.textstyleDes}>
+                          {item.Des} - {item.Code}
+                        </Text>
+                        <View
+                          style={{
+                            alignSelf: 'flex-end',
+                            marginBottom: -20,
+                          }}
+                        >
+                          <Icon
+                            raised
+                            name='telegram'
+                            type='font-awesome'
+                            color=''
+                            onPress={() => navigationHandler()}
+                          />
+                        </View>
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -104,20 +123,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#e7e6e1',
     margin: 10,
-    paddingHorizontal: 20,
     alignItems: 'baseline',
     borderRadius: 25,
   },
   textstyleHeader: {
+    paddingHorizontal: 20,
     color: '#f2a154',
     fontSize: 50,
   },
-  textstyleCode: {
-    color: '#e7e6e1',
-    width: '25%',
-  },
   textstyleDes: {
-    color: '#314e52',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    color: '#e7e6e1',
     fontSize: 20,
   },
 })
