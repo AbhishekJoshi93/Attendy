@@ -59,16 +59,6 @@ const CreateScreen = ({ navigation }) => {
             setDes('')
             setCode(`${(+new Date()).toString(36).slice(-5)}`)
             navigation.navigate('Home')
-            // firebase
-            //   .firestore()
-            //   .collection('classes')
-            //   .doc(result.id)
-            //   .collection('Teacher')
-            //   .doc(firebase.auth().currentUser.uid)
-            //   .set({
-            //   })
-            //   .then((result) => {
-            //   })
           })
           .catch((err) => {
             Alert.alert('Try again')

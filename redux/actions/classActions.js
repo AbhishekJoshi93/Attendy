@@ -12,7 +12,7 @@ export const fetchClass = (ItemCode) => (dispatch) => {
     .get()
     .then((querySnapShot) => {
       querySnapShot.forEach((doc) => {
-        dispatch({ type: CLASS_STATE_CHANGE, payload: doc.id })
+        dispatch({ type: CLASS_STATE_CHANGE, payload: doc.data() })
       })
     })
 }

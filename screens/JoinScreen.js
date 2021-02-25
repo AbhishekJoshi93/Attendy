@@ -71,12 +71,10 @@ const JoinScreen = ({ navigation }) => {
         .collection('classes')
         .doc(Id)
         .update({
-          Student: [
-            {
-              Name: `${loginUser.name}`,
-              Email: `${loginUser.email}`,
-            },
-          ],
+          Student: firebase.firestore.FieldValue.arrayUnion({
+            Name: `${loginUser.name}`,
+            Email: `${loginUser.email}`,
+          }),
         })
         .then((result) => {
           Alert.alert(`Class ${Title} joined`)

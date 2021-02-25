@@ -16,7 +16,7 @@ const ClassHome = ({ navigation }) => {
   } else {
     return (
       <View>
-        <Text>{loginClass}</Text>
+        <Text>{loginClass.Code}</Text>
       </View>
     )
   }
