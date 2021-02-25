@@ -85,28 +85,30 @@ const ClassSetting = ({ navigation, route }) => {
         <View style={styles.heading}>
           <Text style={{ fontSize: 25, color: '#314e52' }}>Students</Text>
         </View>
-        {loginClass.Student.map((stu) => {
-          return (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'baseline',
-                justifyContent: 'space-between',
-                margin: 25,
-              }}
-            >
-              <Text style={{ fontSize: 20 }}>
-                {stu.Name} - {stu.Email}
-              </Text>
-              <Avatar
-                rounded
-                size='small'
-                title={stu.Name.charAt(0) + stu.Email.charAt(0)}
-                overlayContainerStyle={{ backgroundColor: '#cd8f82' }}
-              />
-            </View>
-          )
-        })}
+
+        {loginClass.Student != undefined &&
+          loginClass.Student.map((stu) => {
+            return (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                  margin: 25,
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>
+                  {stu.Name} - {stu.Email}
+                </Text>
+                <Avatar
+                  rounded
+                  size='small'
+                  title={stu.Name.charAt(0) + stu.Email.charAt(0)}
+                  overlayContainerStyle={{ backgroundColor: '#cd8f82' }}
+                />
+              </View>
+            )
+          })}
       </View>
     </View>
   )
