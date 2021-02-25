@@ -3,14 +3,19 @@ import { View, Text, FlatList, StyleSheet, LogBox } from 'react-native'
 
 import Header from './HeaderComponent'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchClass, fetchClassCode } from '../redux/actions/classActions'
+
 import firebase from 'firebase'
 import 'firebase/firestore'
 import { ScrollView } from 'react-native'
 import { TouchableOpacity } from 'react-native'
-import { Button } from 'react-native'
 import { Icon } from 'react-native-elements'
+import { ActivityIndicator } from 'react-native'
 
 const HomeScreen = ({ navigation }) => {
+  const dispatch = useDispatch()
+
   const [Data, setData] = useState([])
   const [Refresh, setRefresh] = useState(false)
 
@@ -19,8 +24,11 @@ const HomeScreen = ({ navigation }) => {
     refreshHandler()
   }, [])
 
-  const navigationHandler = () => {
-    navigation.navigate('Root2', { screen: 'Class Home' })
+  const navigationHandler = (ItemCode) => {
+    dispatch(fetchClass(ItemCode))
+    navigation.navigate('Root2', {
+      screen: 'Class Home',
+    })
   }
 
   const refreshHandler = () => {
@@ -76,7 +84,9 @@ const HomeScreen = ({ navigation }) => {
                             name='telegram'
                             type='font-awesome'
                             color=''
-                            onPress={() => navigationHandler()}
+                            onPress={() => {
+                              navigationHandler(item.Code)
+                            }}
                           />
                         </View>
                       </View>

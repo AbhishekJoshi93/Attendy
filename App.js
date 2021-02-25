@@ -40,6 +40,8 @@ import JoinScreen from './screens/JoinScreen'
 import ClassHome from './screens/ClassHome'
 import ClassQuiz from './screens/ClassQuiz'
 import ClassSetting from './screens/ClassSetting'
+import ClassExit from './screens/ClassExit'
+
 import { Icon } from 'react-native-elements'
 
 const AppStack = createStackNavigator()
@@ -100,6 +102,7 @@ const App = () => {
   function Root2() {
     return (
       <Tab.Navigator
+        initialRouteName='Class Home'
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName
@@ -110,6 +113,8 @@ const App = () => {
               iconName = 'cog'
             } else if (route.name === 'Create Quiz') {
               iconName = 'plus'
+            } else if (route.name === 'Class Exit') {
+              iconName = 'times'
             }
 
             return <Icon name={iconName} color={color} type='font-awesome' />
@@ -126,6 +131,7 @@ const App = () => {
         <Tab.Screen name='Class Home' component={ClassHome} />
         <Tab.Screen name='Create Quiz' component={ClassQuiz} />
         <Tab.Screen name='Class Setting' component={ClassSetting} />
+        <Tab.Screen name='Class Exit' component={ClassExit} />
       </Tab.Navigator>
     )
   }
@@ -139,6 +145,7 @@ const App = () => {
             <AppStack.Screen
               name='Root2'
               component={Root2}
+              initialParams={{ Code: '' }}
               options={{ swipeEnabled: false }}
             />
             <AppStack.Screen name='Signup' component={SignupScreen} />

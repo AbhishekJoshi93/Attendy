@@ -70,11 +70,13 @@ const JoinScreen = ({ navigation }) => {
         .firestore()
         .collection('classes')
         .doc(Id)
-        .collection('Student')
-        .doc(firebase.auth().currentUser.uid)
-        .set({
-          Name: `${loginUser.name}`,
-          Email: `${loginUser.email}`,
+        .update({
+          Student: [
+            {
+              Name: `${loginUser.name}`,
+              Email: `${loginUser.email}`,
+            },
+          ],
         })
         .then((result) => {
           Alert.alert(`Class ${Title} joined`)

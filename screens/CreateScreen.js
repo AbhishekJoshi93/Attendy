@@ -48,25 +48,27 @@ const CreateScreen = ({ navigation }) => {
             Title,
             Des,
             Code,
+            Teacher: {
+              Name: `${loginUser.name}`,
+              Email: `${loginUser.email}`,
+            },
           })
           .then((res) => {
-            firebase
-              .firestore()
-              .collection('classes')
-              .doc(result.id)
-              .collection('Teacher')
-              .doc(firebase.auth().currentUser.uid)
-              .set({
-                Name: `${loginUser.name}`,
-                Email: `${loginUser.email}`,
-              })
-              .then((result) => {
-                Alert.alert(`Class ${Title} created`)
-                setTitle('')
-                setDes('')
-                setCode(`${(+new Date()).toString(36).slice(-5)}`)
-                navigation.navigate('Home')
-              })
+            Alert.alert(`Class ${Title} created`)
+            setTitle('')
+            setDes('')
+            setCode(`${(+new Date()).toString(36).slice(-5)}`)
+            navigation.navigate('Home')
+            // firebase
+            //   .firestore()
+            //   .collection('classes')
+            //   .doc(result.id)
+            //   .collection('Teacher')
+            //   .doc(firebase.auth().currentUser.uid)
+            //   .set({
+            //   })
+            //   .then((result) => {
+            //   })
           })
           .catch((err) => {
             Alert.alert('Try again')
