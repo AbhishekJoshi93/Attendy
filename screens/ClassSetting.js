@@ -3,6 +3,7 @@ import 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Avatar, Icon, Input } from 'react-native-elements'
+import { ScrollView } from 'react-native-gesture-handler'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -20,7 +21,7 @@ const ClassSetting = ({ navigation, route }) => {
     return <ActivityIndicator size='large' color='#000000' />
   }
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.head}>
         <Text style={{ fontSize: 35, color: '#314e52' }}>Setting</Text>
       </View>
@@ -110,7 +111,7 @@ const ClassSetting = ({ navigation, route }) => {
             )
           })}
       </View>
-    </View>
+    </ScrollView>
   )
 }
 

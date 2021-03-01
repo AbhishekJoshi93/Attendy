@@ -92,7 +92,6 @@ const App = () => {
         <Drawer.Screen name='Home' component={HomeScreen} />
         <Drawer.Screen name='Create Class' component={CreateScreen} />
         <Drawer.Screen name='Join Class' component={JoinScreen} />
-        <Drawer.Screen name='Attendance Report' component={ReportScreen} />
         <Drawer.Screen name='Profile' component={ProfileScreen} />
         <Drawer.Screen name='Logout' component={LogoutScreen} />
       </Drawer.Navigator>
