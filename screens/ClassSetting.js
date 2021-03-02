@@ -120,7 +120,7 @@ export default ClassSetting
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e7e6e1',
+    backgroundColor: '#f7f6e7',
   },
   heading: {
     marginHorizontal: 25,

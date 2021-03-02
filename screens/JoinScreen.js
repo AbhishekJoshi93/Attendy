@@ -48,6 +48,7 @@ const JoinScreen = ({ navigation }) => {
         return
       })
     if (Id == '') {
+      return <ActivityIndicator size='large' color='#000000' />
     }
     if (Id != '') {
       firebase

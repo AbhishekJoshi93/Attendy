@@ -12,6 +12,14 @@ import { ScrollView } from 'react-native'
 import { FlatList } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import { render } from 'react-dom'
+import { Alert } from 'react-native'
+
+import firebase from 'firebase'
+import 'firebase/firestore'
+import { ActivityIndicator } from 'react-native'
+
 const ClassQuiz = ({ navigation }) => {
   const dispatch = useDispatch()
 
@@ -23,9 +31,10 @@ const ClassQuiz = ({ navigation }) => {
 
   const [Title, setTitle] = useState('')
   const [Marks, setMarks] = useState(0)
-  const [Code, setCode] = useState(
-    `${loginClass.Code}-${(+new Date()).toString(36).slice(-5)}`
-  )
+  // const [Code, setCode] = useState(
+  //   `${loginClass.Code}-${(+new Date()).toString(36).slice(-5)}`
+  // )
+  const [DateTime, setDateTime] = useState(new Date())
 
   const [isModalVisible, setModalVisible] = useState(false)
 
@@ -41,8 +50,40 @@ const ClassQuiz = ({ navigation }) => {
   const [OptB, setOptB] = useState('')
   const [OptC, setOptC] = useState('')
 
+  const [Heading, setHeading] = useState('')
+
+  const [ClassId, setClassId] = useState('')
+
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true)
+  }
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false)
+  }
+
+  const handleConfirm = (datetime) => {
+    setDateTime(datetime)
+    setHeading('Date')
+    hideDatePicker()
+  }
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible)
+  }
+
+  const resetStateHandler = () => {
+    setQues([])
+    setAns([])
+    setOptionA([])
+    setOptionB([])
+    setOptionC([])
+    setTitle('')
+    setMarks(0)
+    setDateTime(new Date())
+    setHeading('')
   }
 
   useEffect(() => {
@@ -53,7 +94,73 @@ const ClassQuiz = ({ navigation }) => {
     return <ActivityIndicator size='large' color='#000000' />
   }
 
-  const createQuizHandler = () => {}
+  const createQuizHandler = () => {
+    if (Title !== '' && Marks !== '') {
+      if (Array.isArray(Ques) && Ques.length) {
+        firebase
+          .firestore()
+          .collection('classes')
+          .where('Code', '==', loginClass.Code)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              setClassId(doc.id)
+            })
+          })
+          .catch((error) => {
+            Alert.alert('Class cannot found')
+            return
+          })
+        if (ClassId == '') {
+          return <ActivityIndicator size='large' color='#000000' />
+        }
+        if (ClassId != '') {
+          firebase
+            .firestore()
+            .collection('classes')
+            .doc(ClassId)
+            .collection('quiz')
+            .add({
+              Title,
+              Marks,
+              DateTime,
+            })
+            .then((result) => {
+              var x = 0
+              while (x < Ques.length) {
+                firebase
+                  .firestore()
+                  .collection('classes')
+                  .doc(ClassId)
+                  .collection('quiz')
+                  .doc(result.id)
+                  .update({
+                    Questions: firebase.firestore.FieldValue.arrayUnion({
+                      Question: `${Ques[x]}`,
+                      Answer: `${Ans[x]}`,
+                      OptionA: `${OptionA[x]}`,
+                      OptionB: `${OptionB[x]}`,
+                      OptionC: `${OptionC[x]}`,
+                    }),
+                  })
+                x++
+              }
+              Alert.alert('Quiz Created')
+              resetStateHandler()
+              navigation.navigate('Class Home')
+            })
+            .catch((error) => {
+              Alert.alert('Quiz cannot created')
+              return
+            })
+        }
+      } else {
+        Alert.alert('Enter Questions')
+      }
+    } else {
+      Alert.alert('Enter Title and Marks')
+    }
+  }
 
   const createQuestion = () => {
     setQuestion('')
@@ -65,7 +172,13 @@ const ClassQuiz = ({ navigation }) => {
   }
 
   const updateHandler = () => {
-    if (Question != '' && Answer != '') {
+    if (
+      Question !== '' &&
+      Answer !== '' &&
+      OptA !== '' &&
+      OptB !== '' &&
+      OptC !== ''
+    ) {
       setQues((Ques) => [...Ques, Question])
       setAns((Ans) => [...Ans, Answer])
       setOptionA((OptionA) => [...OptionA, OptA])
@@ -87,6 +200,17 @@ const ClassQuiz = ({ navigation }) => {
         flex: 2,
       }}
     >
+      <View style={styles.head}>
+        {Heading !== '' ? (
+          <Text style={{ fontSize: 25, color: '#314e52' }}>
+            Date:{DateTime.getDate()}/{DateTime.getMonth()}/
+            {DateTime.getFullYear()}, Time:
+            {DateTime.toLocaleTimeString('en-US')}
+          </Text>
+        ) : (
+          <Text style={{ fontSize: 35, color: '#314e52' }}>Quiz Details</Text>
+        )}
+      </View>
       {loginUser.person == 'Teacher' ? (
         <View style={styles.container}>
           <Input
@@ -109,22 +233,8 @@ const ClassQuiz = ({ navigation }) => {
             }}
             placeholder='Enter minimum marks'
             onChangeText={(marks) => setMarks(marks)}
-            value={Marks}
+            value={Marks.toString()}
             keyboardType='phone-pad'
-            autoFocus={false}
-            style={{ padding: 5 }}
-          />
-
-          <Input
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'key',
-              color: '#cd8f82',
-            }}
-            placeholder='Enter minimum marks'
-            onChangeText={(code) => setCode(code)}
-            value={Code}
-            disabled={true}
             autoFocus={false}
             style={{ padding: 5 }}
           />
@@ -133,9 +243,20 @@ const ClassQuiz = ({ navigation }) => {
             style={{
               flex: 1,
               flexDirection: 'row',
-              alignItems: 'baseline',
             }}
           >
+            <Button
+              type='outline'
+              raised
+              title='Date & Time'
+              onPress={showDatePicker}
+            />
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode='datetime'
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
             <Button
               title='Add Question'
               type='outline'
@@ -318,26 +439,26 @@ const ClassQuiz = ({ navigation }) => {
                   name: 'quora',
                   color: '#cd8f82',
                 }}
-                placeholder='Enter Question'
+                placeholder='Enter Question ?'
                 onChangeText={(cquestion) => setQuestion(cquestion)}
                 autoFocus={false}
                 style={{ padding: 5 }}
               />
 
               <Input
-                placeholder='Enter Option A'
+                placeholder='Option A'
                 onChangeText={(ca) => setOptA(ca)}
                 autoFocus={false}
                 style={{ padding: 5 }}
               />
               <Input
-                placeholder='Enter Option B'
+                placeholder='Option B'
                 onChangeText={(cb) => setOptB(cb)}
                 autoFocus={false}
                 style={{ padding: 5 }}
               />
               <Input
-                placeholder='Enter Option C'
+                placeholder='Option C'
                 onChangeText={(cc) => setOptC(cc)}
                 autoFocus={false}
                 style={{ padding: 5 }}
@@ -386,5 +507,9 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  head: {
+    margin: 25,
+    marginBottom: 10,
   },
 })
