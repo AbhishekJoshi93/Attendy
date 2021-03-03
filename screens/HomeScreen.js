@@ -68,6 +68,7 @@ const HomeScreen = ({ navigation }) => {
                           backgroundColor: '#314e52',
                           width: '100%',
                           borderRadius: 25,
+                          marginBottom: 2,
                         }}
                       >
                         <Text style={styles.textstyleDes}>

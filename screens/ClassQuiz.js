@@ -203,8 +203,7 @@ const ClassQuiz = ({ navigation }) => {
       <View style={styles.head}>
         {Heading !== '' ? (
           <Text style={{ fontSize: 25, color: '#314e52' }}>
-            Date:{DateTime.getDate()}/{DateTime.getMonth()}/
-            {DateTime.getFullYear()}, Time:
+            Date: {DateTime.toLocaleDateString()}, Time:
             {DateTime.toLocaleTimeString('en-US')}
           </Text>
         ) : (
