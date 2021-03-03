@@ -62,7 +62,12 @@ const JoinScreen = ({ navigation }) => {
           Des,
           Code,
         })
-        .then((result) => {})
+        .then((result) => {
+          console.log('====================================')
+          console.log(Title)
+          console.log(Des)
+          console.log('====================================')
+        })
         .catch((error) => {
           Alert.alert('Class cannot join')
           return
@@ -82,6 +87,7 @@ const JoinScreen = ({ navigation }) => {
           setTitle('')
           setDes('')
           setCode('')
+          setId('')
           navigation.navigate('Home')
         })
         .catch((error) => {

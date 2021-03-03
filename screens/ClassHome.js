@@ -11,7 +11,9 @@ import { ScrollView } from 'react-native'
 import { FlatList } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import Header2 from './Header2Component'
-import { Icon } from 'react-native-elements'
+import { Button, Icon } from 'react-native-elements'
+
+import Modal from 'react-native-modal'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -19,35 +21,59 @@ const ClassHome = ({ navigation }) => {
   const currentClass = useSelector((state) => state.currentClass)
   const { loginClass } = currentClass
 
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [isModalVisible2, setModalVisible2] = useState(false)
+
   const [Data, setData] = useState([])
   const [Refresh, setRefresh] = useState(false)
   const [ClassId, setClassId] = useState('')
 
   useEffect(() => {
-    if (loginClass.Code == undefined) {
-      return <ActivityIndicator size='large' color='#000000' />
-    } else {
-      refreshHandler()
-    }
-  }, [loginClass])
+    refreshHandler()
+  }, [])
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible)
+  }
+
+  const toggleModal2 = () => {
+    setModalVisible2(!isModalVisible2)
+  }
+
+  const QuestionHandler = () => {
+    toggleModal()
+  }
+  const QuestionHandler2 = () => {
+    toggleModal()
+  }
+
+  const AttendanceHandler = () => {
+    toggleModal2()
+  }
+  const AttendanceHandler2 = () => {
+    toggleModal2()
+  }
 
   const refreshHandler = () => {
     setData([])
-
-    firebase
-      .firestore()
-      .collection('classes')
-      .where('Code', '==', loginClass.Code)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setClassId(doc.id)
+    if (loginClass.Code == undefined) {
+      return <ActivityIndicator size='large' color='#000000' />
+    } else {
+      firebase
+        .firestore()
+        .collection('classes')
+        .where('Code', '==', loginClass.Code)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            setClassId(doc.id)
+          })
         })
-      })
-      .catch((error) => {
-        Alert.alert('Class cannot found')
-        return
-      })
+        .catch((error) => {
+          Alert.alert('Class cannot found')
+          return
+        })
+    }
     if (ClassId == '') {
       return <ActivityIndicator size='large' color='#000000' />
     }
@@ -130,17 +156,55 @@ const ClassHome = ({ navigation }) => {
                             name='list-alt'
                             type='font-awesome'
                             color=''
-                            onPress={() => {}}
+                            onPress={() => QuestionHandler()}
                           />
                           <Icon
                             raised
                             name='flag'
                             type='font-awesome'
                             color=''
-                            onPress={() => {}}
+                            onPress={() => AttendanceHandler()}
                           />
                         </View>
                       </View>
+                      <Modal
+                        isVisible={isModalVisible}
+                        backgroundColor='#e7e6e1'
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Button
+                            title='Close Question'
+                            type='outline'
+                            raised
+                            onPress={() => QuestionHandler2()}
+                          />
+                        </View>
+                      </Modal>
+                      <Modal
+                        isVisible={isModalVisible2}
+                        backgroundColor='#e7e6e1'
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Button
+                            title='Close Attendance'
+                            type='outline'
+                            raised
+                            onPress={() => AttendanceHandler2()}
+                          />
+                        </View>
+                      </Modal>
                     </View>
                   )
                 }}
