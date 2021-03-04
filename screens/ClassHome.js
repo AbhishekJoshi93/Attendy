@@ -4,6 +4,7 @@ import { View, Text } from 'react-native'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchClassCode } from '../redux/actions/classActions'
+import { fetchUser } from '../redux/actions/userActions'
 
 import firebase from 'firebase'
 import 'firebase/firestore'
@@ -14,12 +15,16 @@ import Header2 from './Header2Component'
 import { Button, Icon } from 'react-native-elements'
 
 import Modal from 'react-native-modal'
+import { render } from 'react-dom'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
 
   const currentClass = useSelector((state) => state.currentClass)
   const { loginClass } = currentClass
+
+  const currentUser = useSelector((state) => state.currentUser)
+  const { loginUser } = currentUser
 
   const [isModalVisible, setModalVisible] = useState(false)
   const [isModalVisible2, setModalVisible2] = useState(false)
@@ -28,9 +33,12 @@ const ClassHome = ({ navigation }) => {
   const [Refresh, setRefresh] = useState(false)
   const [ClassId, setClassId] = useState('')
 
+  const [QuesArray, setQuesArray] = useState([])
+
   useEffect(() => {
+    dispatch(fetchUser())
     refreshHandler()
-  }, [])
+  }, [dispatch])
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible)
@@ -53,6 +61,8 @@ const ClassHome = ({ navigation }) => {
   const AttendanceHandler2 = () => {
     toggleModal2()
   }
+
+  const StudentHandler = () => {}
 
   const refreshHandler = () => {
     setData([])
@@ -104,9 +114,7 @@ const ClassHome = ({ navigation }) => {
             <ScrollView>
               <FlatList
                 data={Data}
-                keyExtractor={(item) => {
-                  return item
-                }}
+                keyExtractor={(item, index) => String(index)}
                 renderItem={({ item }) => {
                   return (
                     <View
@@ -143,47 +151,224 @@ const ClassHome = ({ navigation }) => {
                           Time:{' '}
                           {item.DateTime.toDate().toLocaleTimeString('en-US')}
                         </Text>
-                        <View
-                          style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignSelf: 'center',
-                            marginBottom: -20,
-                          }}
-                        >
-                          <Icon
-                            raised
-                            name='list-alt'
-                            type='font-awesome'
-                            color=''
-                            onPress={() => QuestionHandler()}
-                          />
-                          <Icon
-                            raised
-                            name='flag'
-                            type='font-awesome'
-                            color=''
-                            onPress={() => AttendanceHandler()}
-                          />
-                        </View>
+                        {loginUser.person == 'Teacher' ? (
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              alignSelf: 'center',
+                              marginBottom: -20,
+                            }}
+                          >
+                            <Icon
+                              raised
+                              name='list-alt'
+                              type='font-awesome'
+                              color=''
+                              onPress={(item) => QuestionHandler(item)}
+                            />
+                            <Icon
+                              raised
+                              name='flag'
+                              type='font-awesome'
+                              color=''
+                              onPress={() => AttendanceHandler()}
+                            />
+                          </View>
+                        ) : (
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              alignSelf: 'center',
+                              marginBottom: -20,
+                            }}
+                          >
+                            {item.DateTime.seconds <
+                            parseInt(new Date().getTime() / 1000) ? (
+                              <View>
+                                <Icon
+                                  raised
+                                  name='arrow-circle-up'
+                                  type='font-awesome'
+                                  color=''
+                                  onPress={() => {
+                                    console.log(item.DateTime), StudentHandler()
+                                  }}
+                                />
+                              </View>
+                            ) : (
+                              <View>
+                                <Icon
+                                  raised
+                                  name='lock'
+                                  type='font-awesome'
+                                  color=''
+                                  disabled={true}
+                                />
+                              </View>
+                            )}
+                          </View>
+                        )}
                       </View>
                       <Modal
                         isVisible={isModalVisible}
                         backgroundColor='#e7e6e1'
+                        onSwipeCancel={() => QuestionHandler2()}
+                        swipeDirection='down'
                       >
-                        <View
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Button
-                            title='Close Question'
-                            type='outline'
-                            raised
-                            onPress={() => QuestionHandler2()}
-                          />
+                        <View style={{ paddingHorizontal: 10 }}>
+                          {Array.isArray(item.Questions) &&
+                          item.Questions.length ? (
+                            <ScrollView>
+                              <Text
+                                style={{
+                                  fontSize: 30,
+                                  color: '#314e52',
+                                  textAlign: 'center',
+                                  marginVertical: 20,
+                                }}
+                              >
+                                Questions
+                              </Text>
+                              {item.Questions.map((itemQuestion, index) => {
+                                return (
+                                  <View
+                                    style={{
+                                      backgroundColor: '#314e52',
+                                      borderRadius: 25,
+                                      marginBottom: 5,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 25,
+                                        color: '#e7e6e1',
+                                        padding: 20,
+                                      }}
+                                    >
+                                      Q{index + 1}: {itemQuestion.Question}
+                                    </Text>
+                                    <View
+                                      style={{
+                                        backgroundColor: '#f2a154',
+                                        padding: 5,
+                                        borderBottomRightRadius: 25,
+                                        borderBottomLeftRadius: 25,
+                                      }}
+                                    >
+                                      <View>
+                                        {itemQuestion.Answer === 'A' ||
+                                        itemQuestion.Answer === 'a' ? (
+                                          <View
+                                            style={{
+                                              backgroundColor: '#e7e6e1',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              A. {itemQuestion.OptionA}
+                                            </Text>
+                                          </View>
+                                        ) : (
+                                          <View
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              A. {itemQuestion.OptionA}
+                                            </Text>
+                                          </View>
+                                        )}
+                                      </View>
+                                      <View>
+                                        {itemQuestion.Answer === 'B' ||
+                                        itemQuestion.Answer === 'b' ? (
+                                          <View
+                                            style={{
+                                              backgroundColor: '#e7e6e1',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              B. {itemQuestion.OptionB}
+                                            </Text>
+                                          </View>
+                                        ) : (
+                                          <View
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              B. {itemQuestion.OptionB}
+                                            </Text>
+                                          </View>
+                                        )}
+                                      </View>
+                                      <View>
+                                        {itemQuestion.Answer === 'C' ||
+                                        itemQuestion.Answer === 'c' ? (
+                                          <View
+                                            style={{
+                                              backgroundColor: '#e7e6e1',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              C. {itemQuestion.OptionC}
+                                            </Text>
+                                          </View>
+                                        ) : (
+                                          <View
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 20 }}>
+                                              C. {itemQuestion.OptionC}
+                                            </Text>
+                                          </View>
+                                        )}
+                                      </View>
+                                    </View>
+                                  </View>
+                                )
+                              })}
+                            </ScrollView>
+                          ) : (
+                            <View style={{ marginTop: 50 }}>
+                              <Image
+                                source={require('../assets/images/add.png')}
+                                style={{ width: 380, height: 300 }}
+                              />
+                              <View style={{ alignItems: 'center' }}>
+                                <Text
+                                  style={{
+                                    fontSize: 25,
+                                    color: '#e7e6e1',
+                                    backgroundColor: '#314e52',
+                                    borderRadius: 25,
+                                    padding: 5,
+                                    width: '50%',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  No Question
+                                </Text>
+                              </View>
+                            </View>
+                          )}
                         </View>
                       </Modal>
                       <Modal
