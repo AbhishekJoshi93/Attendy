@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
+    <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
       <Header greeting='Hello' />
       <View style={{ flex: 11, alignItems: 'flex-start' }}>
         {Array.isArray(Data) && Data.length ? (
@@ -65,10 +65,9 @@ const HomeScreen = ({ navigation }) => {
                       <Text style={styles.textstyleHeader}>{item.Title}</Text>
                       <View
                         style={{
-                          backgroundColor: '#314e52',
+                          backgroundColor: '#252a34',
                           width: '100%',
                           borderRadius: 25,
-                          marginBottom: 2,
                         }}
                       >
                         <Text style={styles.textstyleDes}>
@@ -77,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
                         <View
                           style={{
                             alignSelf: 'flex-end',
-                            marginBottom: -20,
+                            marginBottom: -18,
                           }}
                         >
                           <Icon
@@ -132,14 +131,15 @@ export default HomeScreen
 const styles = StyleSheet.create({
   flatlistContainer: {
     flex: 1,
-    backgroundColor: '#e7e6e1',
+    backgroundColor: '#ff2e63',
     margin: 10,
     alignItems: 'baseline',
     borderRadius: 25,
+    marginBottom: 12,
   },
   textstyleHeader: {
     paddingHorizontal: 20,
-    color: '#f2a154',
+    color: '#eaeaea',
     fontSize: 50,
   },
   textstyleDes: {

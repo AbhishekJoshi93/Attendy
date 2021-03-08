@@ -21,7 +21,7 @@ const LogoutScreen = ({ navigation }) => {
       style={{
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: '#f7f6e7',
+        backgroundColor: '#ffffff',
       }}
     >
       <Header greeting='Bye' />
@@ -30,7 +30,7 @@ const LogoutScreen = ({ navigation }) => {
           <Text style={styles.textstyleHeader}>Logout</Text>
           <View
             style={{
-              backgroundColor: '#314e52',
+              backgroundColor: '#252a34',
               width: '100%',
               borderRadius: 25,
             }}
@@ -46,7 +46,6 @@ const LogoutScreen = ({ navigation }) => {
                 raised
                 name='telegram'
                 type='font-awesome'
-                color=''
                 onPress={() => logoutHandler()}
               />
             </View>
@@ -61,14 +60,14 @@ export default LogoutScreen
 
 const styles = StyleSheet.create({
   flatlistContainer: {
-    backgroundColor: '#e7e6e1',
+    backgroundColor: '#ff2e63',
     margin: 10,
     alignItems: 'baseline',
     borderRadius: 25,
   },
   textstyleHeader: {
     paddingHorizontal: 20,
-    color: '#f2a154',
+    color: '#ffffff',
     fontSize: 50,
   },
   textstyleDes: {

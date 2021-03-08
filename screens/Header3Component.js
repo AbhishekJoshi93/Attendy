@@ -7,7 +7,7 @@ const Header2 = ({ navigation, greeting }) => {
       <Text
         style={{
           fontSize: 25,
-          color: '#e7e6e1',
+          color: '#252a34',
           backgroundColor: '#314e52',
           borderRadius: 25,
           padding: 5,

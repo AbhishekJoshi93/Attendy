@@ -33,8 +33,10 @@ const Header = ({ navigation, greeting }) => {
         <Avatar
           rounded
           size='medium'
+          titleStyle={{ color: '#252a34' }}
+          containerStyle={{ borderColor: '#252a34', borderWidth: 2 }}
           title={loginUser.name.charAt(0) + loginUser.email.charAt(0)}
-          overlayContainerStyle={{ backgroundColor: '#cd8f82' }}
+          overlayContainerStyle={{ backgroundColor: '#eaeaea' }}
         />
         {loginUser.person == 'Student' ? (
           <Badge status='success' containerStyle={{ position: 'absolute' }} />

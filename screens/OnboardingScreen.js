@@ -9,43 +9,47 @@ const OnboardingScreen = ({ navigation }) => {
     <Onboarding
       onSkip={() => navigation.replace('Login')}
       onDone={() => navigation.navigate('Login')}
+      bottomBarColor={'#252a34'}
       pages={[
         {
-          backgroundColor: '#f7f6e7',
           image: (
-            <View style={styles.imgcon}>
+            <View>
               <Image
                 source={require('../assets/images/teacher.png')}
                 style={{ width: 350, height: 400 }}
               />
             </View>
           ),
+          titleStyles: { color: '#252a34', fontSize: 50 },
+          subTitleStyles: { color: '#252a34', fontSize: 20 },
           title: 'Attendy',
-          subtitle: 'Evaluation based attendance app with alerts',
+          subtitle: 'Evaluation based attendance app',
         },
         {
-          backgroundColor: '#f7f6e7',
           image: (
-            <View style={styles.imgcon}>
+            <View>
               <Image
                 source={require('../assets/images/boy.png')}
                 style={{ width: 350, height: 400 }}
               />
             </View>
           ),
+          titleStyles: { color: '#252a34', fontSize: 50 },
+          subTitleStyles: { color: '#252a34', fontSize: 20 },
           title: 'Waiting',
-          subtitle: 'No extra time required to manual take attendance',
+          subtitle: 'No extra time for manual attendance',
         },
         {
-          backgroundColor: '#f7f6e7',
           image: (
-            <View style={styles.imgcon}>
+            <View>
               <Image
                 source={require('../assets/images/bag.png')}
                 style={{ width: 350, height: 400 }}
               />
             </View>
           ),
+          titleStyles: { color: '#252a34', fontSize: 50 },
+          subTitleStyles: { color: '#252a34', fontSize: 20 },
           title: 'Report',
           subtitle: 'Get all attendance track within the app',
         },

@@ -5,7 +5,7 @@ import Header2 from './Header2Component'
 
 const ReportScreen = ({ navigation }) => {
   return (
-    <View style={{ backgroundColor: '#f7f6e7' }}>
+    <View>
       <Header2 greeting='Attendance Report' />
     </View>
   )

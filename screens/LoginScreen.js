@@ -52,7 +52,7 @@ const LoginScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'envelope',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter Email'
             onChangeText={(email) => setEmail(email)}
@@ -69,7 +69,7 @@ const LoginScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'lock',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter Password'
             secureTextEntry={true}
@@ -92,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text
             style={{
-              color: '#314e52',
+              color: '#252a34',
               fontSize: 15,
               textAlign: 'center',
             }}
@@ -121,7 +121,7 @@ const LoginScreen = ({ navigation }) => {
         >
           <TouchableOpacity
             style={{
-              color: 'blue',
+              color: '#252a34',
               fontSize: 15,
               textAlign: 'center',
             }}
@@ -152,10 +152,10 @@ export default LoginScreen
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#ffffff',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f7f6e7',
   },
   imageContainer: {
     paddingLeft: '5%',

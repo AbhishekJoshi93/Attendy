@@ -82,8 +82,8 @@ const SignupScreen = ({ navigation }) => {
             />
             {enable2 && (
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                <Text style={{ color: '#314e52', fontSize: 18 }}>Teacher</Text>
-                <Icon name='check-circle' type='font-awesome' color='#cd8f82' />
+                <Text style={{ color: '#252a34', fontSize: 18 }}>Teacher</Text>
+                <Icon name='check-circle' type='font-awesome' color='#252a34' />
               </View>
             )}
           </TouchableOpacity>
@@ -102,8 +102,8 @@ const SignupScreen = ({ navigation }) => {
             />
             {enable && (
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                <Text style={{ color: '#314e52', fontSize: 18 }}>Student</Text>
-                <Icon name='check-circle' type='font-awesome' color='#cd8f82' />
+                <Text style={{ color: '#252a34', fontSize: 18 }}>Student</Text>
+                <Icon name='check-circle' type='font-awesome' color='#252a34' />
               </View>
             )}
           </TouchableOpacity>
@@ -113,7 +113,7 @@ const SignupScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'user',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter Name'
             onChangeText={(name) => setName(name)}
@@ -129,7 +129,7 @@ const SignupScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'envelope',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter Email'
             onChangeText={(email) => setEmail(email)}
@@ -147,7 +147,7 @@ const SignupScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'lock',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter Password'
             secureTextEntry={true}
@@ -171,7 +171,7 @@ const SignupScreen = ({ navigation }) => {
           <Text
             style={{
               marginTop: '-5%',
-              color: '#314e52',
+              color: '#252a34',
               fontSize: 15,
               textAlign: 'center',
             }}
@@ -199,10 +199,10 @@ export default SignupScreen
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#ffffff',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f7f6e7',
   },
   imagesContainer: {
     height: 200,

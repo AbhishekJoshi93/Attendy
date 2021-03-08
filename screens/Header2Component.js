@@ -7,7 +7,7 @@ const Header2 = ({ navigation, greeting }) => {
       <Text
         style={{
           fontSize: 30,
-          color: '#314e52',
+          color: '#252a34',
         }}
       >
         {greeting}

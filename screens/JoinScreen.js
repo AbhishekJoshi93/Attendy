@@ -98,7 +98,7 @@ const JoinScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
+    <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
       <Header2 greeting='Join Class' />
       {loginUser.person == 'Student' ? (
         <View style={styles.container}>
@@ -106,7 +106,7 @@ const JoinScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'key',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter code'
             onChangeText={(code) => setCode(code)}
@@ -123,7 +123,7 @@ const JoinScreen = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.container2}>
-          <Icon raised name='lock' type='font-awesome' color='#cd8f82' />
+          <Icon raised name='lock' type='font-awesome' color='#252a34' />
         </View>
       )}
     </View>

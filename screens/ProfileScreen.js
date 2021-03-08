@@ -5,7 +5,7 @@ import Header2 from './Header2Component'
 
 const ProfileScreen = ({ navigation }) => {
   return (
-    <View style={{ backgroundColor: '#f7f6e7' }}>
+    <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
       <Header2 greeting='Profile' />
     </View>
   )

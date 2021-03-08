@@ -81,11 +81,11 @@ const App = () => {
   function Root() {
     return (
       <Drawer.Navigator
-        drawerStyle={{ backgroundColor: '#cd8f82' }}
+        drawerStyle={{ backgroundColor: '#eaeaea' }}
         drawerContentOptions={{
-          activeBackgroundColor: '#f7f6e7',
-          activeTintColor: '#314e52',
-          inactiveTintColor: '#e7e6e1',
+          activeBackgroundColor: '#252a34',
+          activeTintColor: '#eaeaea',
+          inactiveTintColor: '#252a34',
         }}
         initialRouteName='Home'
       >

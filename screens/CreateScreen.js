@@ -70,7 +70,7 @@ const CreateScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
+    <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
       <Header2 greeting='Create Class' />
       {loginUser.person == 'Teacher' ? (
         <View style={styles.container}>
@@ -78,7 +78,7 @@ const CreateScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'odnoklassniki',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter class title'
             onChangeText={(title) => setTitle(title)}
@@ -90,7 +90,7 @@ const CreateScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'angellist',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter class description'
             onChangeText={(des) => setDes(des)}
@@ -102,9 +102,10 @@ const CreateScreen = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'key',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter code'
+            disabled={true}
             onChangeText={(code) => setCode(code)}
             value={Code}
             autoFocus={false}
@@ -119,7 +120,7 @@ const CreateScreen = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.container2}>
-          <Icon raised name='lock' type='font-awesome' color='#cd8f82' />
+          <Icon raised name='lock' type='font-awesome' color='#252a34' />
         </View>
       )}
     </View>
