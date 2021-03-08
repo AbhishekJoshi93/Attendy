@@ -12,10 +12,9 @@ import { ScrollView } from 'react-native'
 import { FlatList } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import Header2 from './Header2Component'
-import { Button, Icon } from 'react-native-elements'
+import { Button, Icon, Image } from 'react-native-elements'
 
 import Modal from 'react-native-modal'
-import { render } from 'react-dom'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -52,6 +51,7 @@ const ClassHome = ({ navigation }) => {
     toggleModal()
   }
   const QuestionHandler2 = () => {
+    setQuesArray([])
     toggleModal()
   }
 
@@ -114,11 +114,11 @@ const ClassHome = ({ navigation }) => {
             <ScrollView>
               <FlatList
                 data={Data}
-                keyExtractor={(item, index) => String(index)}
-                renderItem={({ item }) => {
+                keyExtractor={(items, index) => String(index)}
+                renderItem={({ item, index }) => {
                   return (
                     <View
-                      key={item}
+                      key={index}
                       style={{
                         backgroundColor: '#e7e6e1',
                         margin: 15,
@@ -165,7 +165,16 @@ const ClassHome = ({ navigation }) => {
                               name='list-alt'
                               type='font-awesome'
                               color=''
-                              onPress={(item) => QuestionHandler(item)}
+                              onPress={() => {
+                                item.Questions.map((itemQuestion, index) => {
+                                  setQuesArray((QuesArray) => [
+                                    ...QuesArray,
+                                    itemQuestion,
+                                  ])
+                                })
+
+                                QuestionHandler()
+                              }}
                             />
                             <Icon
                               raised
@@ -218,8 +227,7 @@ const ClassHome = ({ navigation }) => {
                         swipeDirection='down'
                       >
                         <View style={{ paddingHorizontal: 10 }}>
-                          {Array.isArray(item.Questions) &&
-                          item.Questions.length ? (
+                          {Array.isArray(QuesArray) && QuesArray.length ? (
                             <ScrollView>
                               <Text
                                 style={{
@@ -231,7 +239,7 @@ const ClassHome = ({ navigation }) => {
                               >
                                 Questions
                               </Text>
-                              {item.Questions.map((itemQuestion, index) => {
+                              {QuesArray.map((itemQuestion, index) => {
                                 return (
                                   <View
                                     style={{
