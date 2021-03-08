@@ -109,8 +109,8 @@ const HomeScreen = ({ navigation }) => {
               <Text
                 style={{
                   fontSize: 25,
-                  color: '#e7e6e1',
-                  backgroundColor: '#314e52',
+                  color: '#ffffff',
+                  backgroundColor: '#252a34',
                   borderRadius: 25,
                   padding: 5,
                   paddingHorizontal: '10%',
@@ -139,13 +139,13 @@ const styles = StyleSheet.create({
   },
   textstyleHeader: {
     paddingHorizontal: 20,
-    color: '#eaeaea',
+    color: '#ffffff',
     fontSize: 50,
   },
   textstyleDes: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    color: '#e7e6e1',
+    color: '#ffffff',
     fontSize: 20,
   },
 })

@@ -214,10 +214,12 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   imagemam: {
+    margin: 5,
     width: 150,
     height: 150,
   },
   imagestu: {
+    margin: 5,
     width: 150,
     height: 150,
   },

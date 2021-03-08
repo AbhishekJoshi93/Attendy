@@ -161,8 +161,8 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
   },
   imagegard: {
-    width: 350,
-    height: 200,
+    width: 250,
+    height: 300,
   },
   bodyContainer: {
     height: 300,

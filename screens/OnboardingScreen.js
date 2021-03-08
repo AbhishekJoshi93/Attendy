@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { LogBox } from 'react-native'
 
 import { View, StyleSheet, Image } from 'react-native'
 
 import Onboarding from 'react-native-onboarding-swiper'
+import { color } from 'react-native-reanimated'
 
 const OnboardingScreen = ({ navigation }) => {
+  useEffect(() => {
+    LogBox.ignoreAllLogs()
+  }, [])
+
   return (
     <Onboarding
       onSkip={() => navigation.replace('Login')}

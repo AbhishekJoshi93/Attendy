@@ -120,10 +120,10 @@ const App = () => {
           },
         })}
         tabBarOptions={{
-          activeTintColor: '#f2a154',
-          inactiveTintColor: '#f7f6e7',
+          activeTintColor: '#eaeaea',
+          inactiveTintColor: 'grey',
           style: {
-            backgroundColor: '#314e52',
+            backgroundColor: '#252a34',
           },
         }}
       >

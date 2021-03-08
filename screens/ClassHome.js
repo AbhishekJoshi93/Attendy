@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, StyleSheet } from 'react-native'
 import { View, Text } from 'react-native'
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -37,7 +37,7 @@ const ClassHome = ({ navigation }) => {
   useEffect(() => {
     dispatch(fetchUser())
     refreshHandler()
-  }, [dispatch])
+  }, [dispatch, loginClass])
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible)
@@ -103,12 +103,16 @@ const ClassHome = ({ navigation }) => {
     }
   }
 
-  if (loginClass == undefined) {
+  if (loginClass == undefined && loginClass.Title == undefined) {
     return <ActivityIndicator size='large' color='#000000' />
   } else {
     return (
-      <View style={{ backgroundColor: '#f7f6e7', flex: 1 }}>
-        <Header2 greeting={'Class: ' + loginClass.Title} />
+      <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
+        <View style={styles.head}>
+          <Text style={{ fontSize: 35, color: '#252a34' }}>
+            Class: {loginClass.Title}
+          </Text>
+        </View>
         {Array.isArray(Data) && Data.length ? (
           <View style={{ flex: 11 }}>
             <ScrollView>
@@ -120,14 +124,14 @@ const ClassHome = ({ navigation }) => {
                     <View
                       key={index}
                       style={{
-                        backgroundColor: '#e7e6e1',
+                        backgroundColor: '#ff2e63',
                         margin: 15,
                         borderRadius: 25,
                       }}
                     >
                       <Text
                         style={{
-                          color: '#f2a154',
+                          color: '#ffffff',
                           fontSize: 35,
                           paddingHorizontal: 25,
                           paddingVertical: 10,
@@ -137,16 +141,16 @@ const ClassHome = ({ navigation }) => {
                       </Text>
                       <View
                         style={{
-                          backgroundColor: '#314e52',
+                          backgroundColor: '#252a34',
                           paddingHorizontal: 25,
                           paddingTop: 10,
                           borderRadius: 25,
                         }}
                       >
-                        <Text style={{ color: '#e7e6e1', fontSize: 20 }}>
+                        <Text style={{ color: '#ffffff', fontSize: 20 }}>
                           Cutoff: {item.Questions.length}/{item.Marks}
                         </Text>
-                        <Text style={{ color: '#e7e6e1', fontSize: 20 }}>
+                        <Text style={{ color: '#ffffff', fontSize: 20 }}>
                           Day: {item.DateTime.toDate().toLocaleDateString()},
                           Time:{' '}
                           {item.DateTime.toDate().toLocaleTimeString('en-US')}
@@ -222,7 +226,7 @@ const ClassHome = ({ navigation }) => {
                       </View>
                       <Modal
                         isVisible={isModalVisible}
-                        backgroundColor='#e7e6e1'
+                        backgroundColor='#ffffff'
                         onSwipeCancel={() => QuestionHandler2()}
                         swipeDirection='down'
                       >
@@ -232,7 +236,7 @@ const ClassHome = ({ navigation }) => {
                               <Text
                                 style={{
                                   fontSize: 30,
-                                  color: '#314e52',
+                                  color: '#252a34',
                                   textAlign: 'center',
                                   marginVertical: 20,
                                 }}
@@ -243,7 +247,7 @@ const ClassHome = ({ navigation }) => {
                                 return (
                                   <View
                                     style={{
-                                      backgroundColor: '#314e52',
+                                      backgroundColor: '#ff2e63',
                                       borderRadius: 25,
                                       marginBottom: 5,
                                     }}
@@ -251,7 +255,7 @@ const ClassHome = ({ navigation }) => {
                                     <Text
                                       style={{
                                         fontSize: 25,
-                                        color: '#e7e6e1',
+                                        color: '#ffffff',
                                         padding: 20,
                                       }}
                                     >
@@ -259,7 +263,7 @@ const ClassHome = ({ navigation }) => {
                                     </Text>
                                     <View
                                       style={{
-                                        backgroundColor: '#f2a154',
+                                        backgroundColor: '#252a34',
                                         padding: 5,
                                         borderBottomRightRadius: 25,
                                         borderBottomLeftRadius: 25,
@@ -270,13 +274,18 @@ const ClassHome = ({ navigation }) => {
                                         itemQuestion.Answer === 'a' ? (
                                           <View
                                             style={{
-                                              backgroundColor: '#e7e6e1',
+                                              backgroundColor: '#eaeaea',
                                               borderRadius: 25,
                                               paddingHorizontal: 20,
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
                                               A. {itemQuestion.OptionA}
                                             </Text>
                                           </View>
@@ -287,7 +296,12 @@ const ClassHome = ({ navigation }) => {
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
                                               A. {itemQuestion.OptionA}
                                             </Text>
                                           </View>
@@ -298,13 +312,18 @@ const ClassHome = ({ navigation }) => {
                                         itemQuestion.Answer === 'b' ? (
                                           <View
                                             style={{
-                                              backgroundColor: '#e7e6e1',
+                                              backgroundColor: '#eaeaea',
                                               borderRadius: 25,
                                               paddingHorizontal: 20,
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
                                               B. {itemQuestion.OptionB}
                                             </Text>
                                           </View>
@@ -315,7 +334,12 @@ const ClassHome = ({ navigation }) => {
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
                                               B. {itemQuestion.OptionB}
                                             </Text>
                                           </View>
@@ -326,13 +350,18 @@ const ClassHome = ({ navigation }) => {
                                         itemQuestion.Answer === 'c' ? (
                                           <View
                                             style={{
-                                              backgroundColor: '#e7e6e1',
+                                              backgroundColor: '#eaeaea',
                                               borderRadius: 25,
                                               paddingHorizontal: 20,
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
                                               C. {itemQuestion.OptionC}
                                             </Text>
                                           </View>
@@ -343,7 +372,12 @@ const ClassHome = ({ navigation }) => {
                                               paddingVertical: 5,
                                             }}
                                           >
-                                            <Text style={{ fontSize: 20 }}>
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
                                               C. {itemQuestion.OptionC}
                                             </Text>
                                           </View>
@@ -381,7 +415,7 @@ const ClassHome = ({ navigation }) => {
                       </Modal>
                       <Modal
                         isVisible={isModalVisible2}
-                        backgroundColor='#e7e6e1'
+                        backgroundColor='#ffffff'
                       >
                         <View
                           style={{
@@ -418,8 +452,8 @@ const ClassHome = ({ navigation }) => {
                 <Text
                   style={{
                     fontSize: 25,
-                    color: '#e7e6e1',
-                    backgroundColor: '#314e52',
+                    color: '#eaeaea',
+                    backgroundColor: '#252a34',
                     borderRadius: 25,
                     padding: 5,
                     paddingHorizontal: '10%',
@@ -437,3 +471,9 @@ const ClassHome = ({ navigation }) => {
 }
 
 export default ClassHome
+
+const styles = StyleSheet.create({
+  head: {
+    margin: 25,
+  },
+})

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   textstyleDes: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    color: '#e7e6e1',
+    color: '#ffffff',
     fontSize: 20,
   },
 })

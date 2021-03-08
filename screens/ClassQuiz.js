@@ -196,18 +196,18 @@ const ClassQuiz = ({ navigation }) => {
   return (
     <ScrollView
       style={{
-        backgroundColor: '#f7f6e7',
+        backgroundColor: '#ffffff',
         flex: 2,
       }}
     >
       <View style={styles.head}>
         {Heading !== '' ? (
-          <Text style={{ fontSize: 25, color: '#314e52' }}>
+          <Text style={{ fontSize: 25, color: '#252a34' }}>
             Date: {DateTime.toLocaleDateString()}, Time:
             {DateTime.toLocaleTimeString('en-US')}
           </Text>
         ) : (
-          <Text style={{ fontSize: 35, color: '#314e52' }}>Quiz Details</Text>
+          <Text style={{ fontSize: 35, color: '#252a34' }}>Quiz Details</Text>
         )}
       </View>
       {loginUser.person == 'Teacher' ? (
@@ -216,7 +216,7 @@ const ClassQuiz = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'bullhorn',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter quiz title'
             onChangeText={(title) => setTitle(title)}
@@ -228,7 +228,7 @@ const ClassQuiz = ({ navigation }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'bullseye',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             placeholder='Enter minimum marks'
             onChangeText={(marks) => setMarks(marks)}
@@ -244,30 +244,33 @@ const ClassQuiz = ({ navigation }) => {
               flexDirection: 'row',
             }}
           >
-            <Button
-              type='outline'
-              raised
-              title='Date & Time'
-              onPress={showDatePicker}
-            />
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode='datetime'
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-            <Button
-              title='Add Question'
-              type='outline'
-              raised
-              onPress={() => createQuestion()}
-            />
-            <Button
-              title='Create Quiz'
-              type='outline'
-              raised
-              onPress={() => createQuizHandler()}
-            />
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                type='outline'
+                title='Date & Time'
+                onPress={showDatePicker}
+              />
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode='datetime'
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+            </View>
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                title='Add Question'
+                type='outline'
+                onPress={() => createQuestion()}
+              />
+            </View>
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                title='Create Quiz'
+                type='outline'
+                onPress={() => createQuizHandler()}
+              />
+            </View>
           </View>
 
           {Array.isArray(Ques) && Ques.length ? (
@@ -292,19 +295,19 @@ const ClassQuiz = ({ navigation }) => {
                   return (
                     <View
                       style={{
-                        backgroundColor: '#314e52',
+                        backgroundColor: '#ff2e63',
                         borderRadius: 25,
                         marginBottom: 5,
                       }}
                     >
                       <Text
-                        style={{ fontSize: 25, color: '#e7e6e1', padding: 20 }}
+                        style={{ fontSize: 25, color: '#ffffff', padding: 20 }}
                       >
                         Q{index + 1}: {Ques[index]}
                       </Text>
                       <View
                         style={{
-                          backgroundColor: '#f2a154',
+                          backgroundColor: '#252a34',
                           padding: 5,
                           borderBottomRightRadius: 25,
                           borderBottomLeftRadius: 25,
@@ -314,13 +317,13 @@ const ClassQuiz = ({ navigation }) => {
                           {Ans[index] === 'A' || Ans[index] === 'a' ? (
                             <View
                               style={{
-                                backgroundColor: '#e7e6e1',
+                                backgroundColor: '#eaeaea',
                                 borderRadius: 25,
                                 paddingHorizontal: 20,
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#252a34' }}>
                                 A. {OptionA[index]}
                               </Text>
                             </View>
@@ -331,7 +334,7 @@ const ClassQuiz = ({ navigation }) => {
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#ffffff' }}>
                                 A. {OptionA[index]}
                               </Text>
                             </View>
@@ -341,13 +344,13 @@ const ClassQuiz = ({ navigation }) => {
                           {Ans[index] === 'B' || Ans[index] === 'b' ? (
                             <View
                               style={{
-                                backgroundColor: '#e7e6e1',
+                                backgroundColor: '#eaeaea',
                                 borderRadius: 25,
                                 paddingHorizontal: 20,
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#252a34' }}>
                                 B. {OptionB[index]}
                               </Text>
                             </View>
@@ -358,7 +361,7 @@ const ClassQuiz = ({ navigation }) => {
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#ffffff' }}>
                                 B. {OptionB[index]}
                               </Text>
                             </View>
@@ -368,13 +371,13 @@ const ClassQuiz = ({ navigation }) => {
                           {Ans[index] === 'C' || Ans[index] === 'c' ? (
                             <View
                               style={{
-                                backgroundColor: '#e7e6e1',
+                                backgroundColor: '#eaeaea',
                                 borderRadius: 25,
                                 paddingHorizontal: 20,
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#252a34' }}>
                                 C. {OptionC[index]}
                               </Text>
                             </View>
@@ -385,7 +388,7 @@ const ClassQuiz = ({ navigation }) => {
                                 paddingVertical: 5,
                               }}
                             >
-                              <Text style={{ fontSize: 20 }}>
+                              <Text style={{ fontSize: 20, color: '#ffffff' }}>
                                 C. {OptionC[index]}
                               </Text>
                             </View>
@@ -410,8 +413,8 @@ const ClassQuiz = ({ navigation }) => {
                 <Text
                   style={{
                     fontSize: 25,
-                    color: '#e7e6e1',
-                    backgroundColor: '#314e52',
+                    color: '#ffffff',
+                    backgroundColor: '#252a34',
                     borderRadius: 25,
                     padding: 5,
                     width: '50%',
@@ -424,7 +427,7 @@ const ClassQuiz = ({ navigation }) => {
             </View>
           )}
 
-          <Modal isVisible={isModalVisible} backgroundColor='#e7e6e1'>
+          <Modal isVisible={isModalVisible} backgroundColor='#ffffff'>
             <View
               style={{
                 flex: 1,
@@ -436,7 +439,7 @@ const ClassQuiz = ({ navigation }) => {
                 leftIcon={{
                   type: 'font-awesome',
                   name: 'quora',
-                  color: '#cd8f82',
+                  color: '#252a34',
                 }}
                 placeholder='Enter Question ?'
                 onChangeText={(cquestion) => setQuestion(cquestion)}
@@ -467,7 +470,7 @@ const ClassQuiz = ({ navigation }) => {
                 leftIcon={{
                   type: 'font-awesome',
                   name: 'arrow-circle-right',
-                  color: '#cd8f82',
+                  color: '#252a34',
                 }}
                 placeholder='Enter Answer - A/B/C'
                 onChangeText={(canswer) => setAnswer(canswer)}
@@ -486,7 +489,7 @@ const ClassQuiz = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.container2}>
-          <Icon raised name='lock' type='font-awesome' color='#cd8f82' />
+          <Icon raised name='lock' type='font-awesome' color='#252a34' />
         </View>
       )}
     </ScrollView>
@@ -503,9 +506,9 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   container2: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
+    alignSelf: 'center',
+    paddingVertical: '65%',
   },
   head: {
     margin: 25,

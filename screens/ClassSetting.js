@@ -23,11 +23,11 @@ const ClassSetting = ({ navigation, route }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.head}>
-        <Text style={{ fontSize: 35, color: '#314e52' }}>Setting</Text>
+        <Text style={{ fontSize: 35, color: '#252a34' }}>Setting</Text>
       </View>
       <View>
         <View style={styles.heading}>
-          <Text style={{ fontSize: 25, color: '#314e52' }}>
+          <Text style={{ fontSize: 30, color: '#252a34' }}>
             Class Information
           </Text>
         </View>
@@ -36,7 +36,7 @@ const ClassSetting = ({ navigation, route }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'odnoklassniki',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             disabled
             placeholder='Enter class title'
@@ -49,7 +49,7 @@ const ClassSetting = ({ navigation, route }) => {
             leftIcon={{
               type: 'font-awesome',
               name: 'angellist',
-              color: '#cd8f82',
+              color: '#252a34',
             }}
             disabled
             placeholder='Enter class description'
@@ -60,7 +60,7 @@ const ClassSetting = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.heading}>
-          <Text style={{ fontSize: 25, color: '#314e52' }}>Teacher</Text>
+          <Text style={{ fontSize: 30, color: '#252a34' }}>Teacher</Text>
         </View>
         <View
           style={{
@@ -76,15 +76,17 @@ const ClassSetting = ({ navigation, route }) => {
           <Avatar
             rounded
             size='small'
+            titleStyle={{ color: '#252a34' }}
+            containerStyle={{ borderColor: '#252a34', borderWidth: 2 }}
             title={
               loginClass.Teacher.Name.charAt(0) +
               loginClass.Teacher.Email.charAt(0)
             }
-            overlayContainerStyle={{ backgroundColor: '#cd8f82' }}
+            overlayContainerStyle={{ backgroundColor: '#eaeaea' }}
           />
         </View>
         <View style={styles.heading}>
-          <Text style={{ fontSize: 25, color: '#314e52' }}>Students</Text>
+          <Text style={{ fontSize: 30, color: '#252a34' }}>Students</Text>
         </View>
 
         {loginClass.Student != undefined &&
@@ -104,8 +106,10 @@ const ClassSetting = ({ navigation, route }) => {
                 <Avatar
                   rounded
                   size='small'
+                  titleStyle={{ color: '#252a34' }}
+                  containerStyle={{ borderColor: '#252a34', borderWidth: 2 }}
                   title={stu.Name.charAt(0) + stu.Email.charAt(0)}
-                  overlayContainerStyle={{ backgroundColor: '#cd8f82' }}
+                  overlayContainerStyle={{ backgroundColor: '#eaeaea' }}
                 />
               </View>
             )
@@ -120,7 +124,7 @@ export default ClassSetting
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f6e7',
+    backgroundColor: '#ffffff',
   },
   heading: {
     marginHorizontal: 25,
