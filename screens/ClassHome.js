@@ -15,6 +15,8 @@ import Header2 from './Header2Component'
 import { Button, Icon, Image } from 'react-native-elements'
 
 import Modal from 'react-native-modal'
+import { createPortal, render } from 'react-dom'
+import { Portal } from 'react-native-paper'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -27,12 +29,19 @@ const ClassHome = ({ navigation }) => {
 
   const [isModalVisible, setModalVisible] = useState(false)
   const [isModalVisible2, setModalVisible2] = useState(false)
+  const [isModalVisiblePaper, setisModalVisiblePaper] = useState(false)
 
   const [Data, setData] = useState([])
   const [Refresh, setRefresh] = useState(false)
   const [ClassId, setClassId] = useState('')
 
   const [QuesArray, setQuesArray] = useState([])
+
+  const [AnsA, setAnsA] = useState([])
+  const [AnsB, setAnsB] = useState([])
+  const [AnsC, setAnsC] = useState([])
+
+  const [StudentAnswer, setStudentAnswer] = useState([])
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -45,6 +54,10 @@ const ClassHome = ({ navigation }) => {
 
   const toggleModal2 = () => {
     setModalVisible2(!isModalVisible2)
+  }
+
+  const toggleModalPaper = () => {
+    setisModalVisiblePaper(!isModalVisiblePaper)
   }
 
   const QuestionHandler = () => {
@@ -62,7 +75,27 @@ const ClassHome = ({ navigation }) => {
     toggleModal2()
   }
 
-  const StudentHandler = () => {}
+  const StudentHandler = () => {
+    toggleModalPaper()
+  }
+
+  const StudentHandler2 = () => {
+    setAnsA([])
+    setAnsB([])
+    setAnsC([])
+    setStudentAnswer([])
+    setQuesArray([])
+    toggleModalPaper()
+  }
+
+  const StudentHandlerCancel = () => {
+    setAnsA([])
+    setAnsB([])
+    setAnsC([])
+    setStudentAnswer([])
+    setQuesArray([])
+    toggleModalPaper()
+  }
 
   const refreshHandler = () => {
     setData([])
@@ -148,7 +181,7 @@ const ClassHome = ({ navigation }) => {
                         }}
                       >
                         <Text style={{ color: '#ffffff', fontSize: 20 }}>
-                          Cutoff: {item.Questions.length}/{item.Marks}
+                          Cutoff: {item.Marks}/{item.Questions.length}
                         </Text>
                         <Text style={{ color: '#ffffff', fontSize: 20 }}>
                           Day: {item.DateTime.toDate().toLocaleDateString()},
@@ -206,7 +239,18 @@ const ClassHome = ({ navigation }) => {
                                   type='font-awesome'
                                   color=''
                                   onPress={() => {
-                                    console.log(item.DateTime), StudentHandler()
+                                    item.Questions.map(
+                                      (itemQuestion, index) => {
+                                        setQuesArray((QuesArray) => [
+                                          ...QuesArray,
+                                          itemQuestion,
+                                        ])
+                                        AnsA[index] = false
+                                        AnsB[index] = false
+                                        AnsC[index] = false
+                                      }
+                                    )
+                                    StudentHandler()
                                   }}
                                 />
                               </View>
@@ -430,6 +474,228 @@ const ClassHome = ({ navigation }) => {
                             raised
                             onPress={() => AttendanceHandler2()}
                           />
+                        </View>
+                      </Modal>
+                      <Modal
+                        isVisible={isModalVisiblePaper}
+                        backgroundColor='#ffffff'
+                      >
+                        <View style={{ paddingHorizontal: 10 }}>
+                          {Array.isArray(QuesArray) && QuesArray.length ? (
+                            <ScrollView>
+                              <Text
+                                style={{
+                                  fontSize: 30,
+                                  color: '#252a34',
+                                  textAlign: 'center',
+                                  marginVertical: 20,
+                                }}
+                              >
+                                Questions
+                              </Text>
+                              {QuesArray.map((itemQuestion, index) => {
+                                return (
+                                  <View
+                                    style={{
+                                      backgroundColor: '#ff2e63',
+                                      borderRadius: 25,
+                                      marginBottom: 5,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 25,
+                                        color: '#ffffff',
+                                        padding: 20,
+                                      }}
+                                    >
+                                      Q{index + 1}: {itemQuestion.Question}
+                                    </Text>
+                                    <View
+                                      style={{
+                                        backgroundColor: '#252a34',
+                                        padding: 5,
+                                        borderBottomRightRadius: 25,
+                                        borderBottomLeftRadius: 25,
+                                      }}
+                                    >
+                                      <View>
+                                        {AnsA[index] ? (
+                                          <TouchableOpacity
+                                            style={{
+                                              backgroundColor: '#eaeaea',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
+                                              A. {itemQuestion.OptionA}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        ) : (
+                                          <TouchableOpacity
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                            onPress={() => {
+                                              StudentAnswer[index] = 'A'
+                                              AnsA[index] = true
+                                              AnsB[index] = false
+                                              AnsC[index] = false
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
+                                              A. {itemQuestion.OptionA}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        )}
+                                        {AnsB[index] ? (
+                                          <TouchableOpacity
+                                            style={{
+                                              backgroundColor: '#eaeaea',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
+                                              B. {itemQuestion.OptionB}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        ) : (
+                                          <TouchableOpacity
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                            onPress={() => {
+                                              StudentAnswer[index] = 'B'
+                                              AnsA[index] = false
+                                              AnsB[index] = true
+                                              AnsC[index] = false
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
+                                              B. {itemQuestion.OptionB}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        )}
+                                        {AnsC[index] ? (
+                                          <TouchableOpacity
+                                            style={{
+                                              backgroundColor: '#eaeaea',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#252a34',
+                                              }}
+                                            >
+                                              C. {itemQuestion.OptionC}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        ) : (
+                                          <TouchableOpacity
+                                            style={{
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                            onPress={() => {
+                                              StudentAnswer[index] = 'C'
+                                              AnsA[index] = false
+                                              AnsB[index] = false
+                                              AnsC[index] = true
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 20,
+                                                color: '#ffffff',
+                                              }}
+                                            >
+                                              C. {itemQuestion.OptionC}
+                                            </Text>
+                                          </TouchableOpacity>
+                                        )}
+                                      </View>
+                                    </View>
+                                  </View>
+                                )
+                              })}
+                            </ScrollView>
+                          ) : (
+                            <View style={{ marginTop: 50 }}>
+                              <Image
+                                source={require('../assets/images/add.png')}
+                                style={{ width: 380, height: 300 }}
+                              />
+                              <View style={{ alignItems: 'center' }}>
+                                <Text
+                                  style={{
+                                    fontSize: 25,
+                                    color: '#e7e6e1',
+                                    backgroundColor: '#314e52',
+                                    borderRadius: 25,
+                                    padding: 5,
+                                    width: '50%',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  No Question
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                          <View
+                            style={{
+                              marginTop: 10,
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Submit'
+                                type='outline'
+                                raised
+                                onPress={() => StudentHandler2()}
+                              />
+                            </View>
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Cancel'
+                                type='outline'
+                                raised
+                                onPress={() => StudentHandlerCancel()}
+                              />
+                            </View>
+                          </View>
                         </View>
                       </Modal>
                     </View>
