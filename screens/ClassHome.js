@@ -11,11 +11,13 @@ import 'firebase/firestore'
 import { ScrollView } from 'react-native'
 import { FlatList } from 'react-native'
 import { TouchableOpacity } from 'react-native'
-import { Button, Icon, Image, Input } from 'react-native-elements'
+import { Button, Icon, Image, Input, Avatar } from 'react-native-elements'
 
 import Modal from 'react-native-modal'
 import { log } from 'react-native-reanimated'
 import { Alert } from 'react-native'
+
+import * as MailComposer from 'expo-mail-composer'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -44,6 +46,8 @@ const ClassHome = ({ navigation }) => {
   const [CutOffQuiz, setCutOffQuiz] = useState(0)
 
   const [Given, setGiven] = useState(false)
+
+  const [StudentAttendance, setStudentAttendance] = useState([])
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -99,15 +103,85 @@ const ClassHome = ({ navigation }) => {
   const QuestionHandler = () => {
     toggleModal()
   }
+
   const QuestionHandler2 = () => {
     setQuesArray([])
     toggleModal()
   }
 
-  const AttendanceHandler = () => {
+  const QuizRemoveHandler = (Code) => {
+    firebase
+      .firestore()
+      .collection('classes')
+      .doc(ClassId)
+      .collection('quiz')
+      .where('Code', '==', Code)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete()
+        })
+      })
+      .catch((error) => {
+        Alert.alert('Quiz isnt removed')
+        return
+      })
+    toggleModal()
+  }
+
+  const AttendanceHandler = (Code) => {
+    firebase
+      .firestore()
+      .collection('classes')
+      .doc(ClassId)
+      .collection('quiz')
+      .where('Code', '==', Code)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          firebase
+            .firestore()
+            .collection('classes')
+            .doc(ClassId)
+            .collection('quiz')
+            .doc(doc.id)
+            .get()
+            .then((result) => {
+              result.data().Attendance.map((data) => {
+                setStudentAttendance((StudentAttendance) => [
+                  ...StudentAttendance,
+                  data,
+                ])
+              })
+            })
+        })
+      })
+      .catch((error) => {
+        Alert.alert('Error try again')
+        return
+      })
+
     toggleModal2()
   }
   const AttendanceHandler2 = () => {
+    setStudentAttendance([])
+    toggleModal2()
+  }
+
+  const DownloadAttendance = () => {
+    let x = []
+    StudentAttendance.map((innerStudent) => {
+      x.push(innerStudent.Name)
+    })
+
+    MailComposer.composeAsync({
+      subject: `Attendance: ${new Date().toLocaleDateString()}`,
+      body: `${x.toString()}`,
+      recipients: ['Attendance@attendy.com'],
+      isHtml: true,
+    })
+
+    setStudentAttendance([])
     toggleModal2()
   }
 
@@ -327,7 +401,7 @@ const ClassHome = ({ navigation }) => {
                               name='flag'
                               type='font-awesome'
                               color=''
-                              onPress={() => AttendanceHandler()}
+                              onPress={() => AttendanceHandler(item.Code)}
                             />
                           </View>
                         ) : (
@@ -566,6 +640,14 @@ const ClassHome = ({ navigation }) => {
                               </View>
                             </View>
                           )}
+                          <View style={{ marginHorizontal: 5 }}>
+                            <Button
+                              title='Stop & Remove Quiz'
+                              type='outline'
+                              raised
+                              onPress={() => QuizRemoveHandler(QuizCode)}
+                            />
+                          </View>
                         </View>
                       </Modal>
                       <Modal
@@ -579,12 +661,83 @@ const ClassHome = ({ navigation }) => {
                             alignItems: 'center',
                           }}
                         >
-                          <Button
-                            title='Close Attendance'
-                            type='outline'
-                            raised
-                            onPress={() => AttendanceHandler2()}
-                          />
+                          <Text
+                            style={{
+                              fontSize: 30,
+                              color: '#252a34',
+                              textAlign: 'center',
+                              marginVertical: 20,
+                            }}
+                          >
+                            Attendance
+                          </Text>
+
+                          {Array.isArray(StudentAttendance) &&
+                          StudentAttendance.length ? (
+                            <View>
+                              {StudentAttendance.map((Student) => {
+                                return (
+                                  <View
+                                    style={{
+                                      flexDirection: 'row',
+                                      alignItems: 'baseline',
+                                      justifyContent: 'space-between',
+                                      margin: 25,
+                                    }}
+                                  >
+                                    <Text style={{ fontSize: 20 }}>
+                                      {Student.Name} - {Student.Email}
+                                    </Text>
+                                    <Avatar
+                                      rounded
+                                      size='small'
+                                      titleStyle={{ color: '#252a34' }}
+                                      containerStyle={{
+                                        borderColor: '#252a34',
+                                        borderWidth: 2,
+                                      }}
+                                      title={Student.Score}
+                                      overlayContainerStyle={{
+                                        backgroundColor: '#eaeaea',
+                                      }}
+                                    />
+                                  </View>
+                                )
+                              })}
+                            </View>
+                          ) : (
+                            <View>
+                              <Text
+                                style={{
+                                  fontSize: 30,
+                                  color: '#252a34',
+                                  textAlign: 'center',
+                                  marginVertical: 20,
+                                }}
+                              >
+                                No Student Attempted
+                              </Text>
+                            </View>
+                          )}
+
+                          <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Close Attendance'
+                                type='outline'
+                                raised
+                                onPress={() => AttendanceHandler2()}
+                              />
+                            </View>
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Download Attendance'
+                                type='outline'
+                                raised
+                                onPress={() => DownloadAttendance()}
+                              />
+                            </View>
+                          </View>
                         </View>
                       </Modal>
                       <Modal
