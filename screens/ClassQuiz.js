@@ -124,6 +124,7 @@ const ClassQuiz = ({ navigation }) => {
               Title,
               Marks,
               DateTime,
+              Code: (+new Date()).toString(36).slice(-5),
             })
             .then((result) => {
               var x = 0

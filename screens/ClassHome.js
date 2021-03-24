@@ -11,12 +11,11 @@ import 'firebase/firestore'
 import { ScrollView } from 'react-native'
 import { FlatList } from 'react-native'
 import { TouchableOpacity } from 'react-native'
-import Header2 from './Header2Component'
-import { Button, Icon, Image } from 'react-native-elements'
+import { Button, Icon, Image, Input } from 'react-native-elements'
 
 import Modal from 'react-native-modal'
-import { createPortal, render } from 'react-dom'
-import { Portal } from 'react-native-paper'
+import { log } from 'react-native-reanimated'
+import { Alert } from 'react-native'
 
 const ClassHome = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -37,11 +36,14 @@ const ClassHome = ({ navigation }) => {
 
   const [QuesArray, setQuesArray] = useState([])
 
-  const [AnsA, setAnsA] = useState([])
-  const [AnsB, setAnsB] = useState([])
-  const [AnsC, setAnsC] = useState([])
+  const [QuizCode, setQuizCode] = useState('')
+  const [QuizId, setQuizId] = useState('')
 
   const [StudentAnswer, setStudentAnswer] = useState([])
+
+  const [CutOffQuiz, setCutOffQuiz] = useState(0)
+
+  const [Given, setGiven] = useState(false)
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -58,6 +60,40 @@ const ClassHome = ({ navigation }) => {
 
   const toggleModalPaper = () => {
     setisModalVisiblePaper(!isModalVisiblePaper)
+  }
+
+  const checkQuizHandler = (Code) => {
+    firebase
+      .firestore()
+      .collection('classes')
+      .doc(ClassId)
+      .collection('quiz')
+      .where('Code', '==', Code)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          firebase
+            .firestore()
+            .collection('classes')
+            .doc(ClassId)
+            .collection('quiz')
+            .doc(doc.id)
+            .get()
+            .then((result) => {
+              if (
+                result.data().Attempt.includes(firebase.auth().currentUser.uid)
+              ) {
+                setGiven(true)
+              } else {
+                setGiven(false)
+              }
+            })
+        })
+      })
+      .catch((error) => {
+        Alert.alert(error.message)
+        return
+      })
   }
 
   const QuestionHandler = () => {
@@ -80,18 +116,90 @@ const ClassHome = ({ navigation }) => {
   }
 
   const StudentHandler2 = () => {
-    setAnsA([])
-    setAnsB([])
-    setAnsC([])
+    var x = 0
+
+    for (let i = 0; i < QuesArray.length; i++) {
+      if (QuesArray[i].Answer === StudentAnswer[i]) {
+        x++
+      }
+    }
+    firebase
+      .firestore()
+      .collection('classes')
+      .doc(ClassId)
+      .collection('quiz')
+      .where('Code', '==', QuizCode)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setQuizId(doc.id)
+        })
+      })
+      .catch((error) => {
+        Alert.alert('Quiz cannot found')
+        return
+      })
+    if (QuizId == '') {
+      return <ActivityIndicator size='large' color='#000000' />
+    }
+    if (QuizId != '') {
+      firebase
+        .firestore()
+        .collection('classes')
+        .doc(ClassId)
+        .collection('quiz')
+        .doc(QuizId)
+        .update({
+          Attempt: firebase.firestore.FieldValue.arrayUnion(
+            firebase.auth().currentUser.uid
+          ),
+        })
+    }
+
+    if (x >= CutOffQuiz) {
+      firebase
+        .firestore()
+        .collection('classes')
+        .doc(ClassId)
+        .collection('quiz')
+        .doc(QuizId)
+        .update({
+          Attendance: firebase.firestore.FieldValue.arrayUnion({
+            Name: `${loginUser.name}`,
+            Email: `${loginUser.email}`,
+            Id: firebase.auth().currentUser.uid,
+            Score: x,
+          }),
+        })
+    } else {
+      firebase
+        .firestore()
+        .collection('classes')
+        .doc(ClassId)
+        .collection('quiz')
+        .doc(QuizId)
+        .update({
+          Failed: firebase.firestore.FieldValue.arrayUnion({
+            Name: `${loginUser.name}`,
+            Email: `${loginUser.email}`,
+            Id: firebase.auth().currentUser.uid,
+            Score: x,
+          }),
+        })
+    }
+
+    setQuizCode('')
+    setCutOffQuiz(0)
     setStudentAnswer([])
     setQuesArray([])
     toggleModalPaper()
+    setGiven(false)
   }
 
   const StudentHandlerCancel = () => {
-    setAnsA([])
-    setAnsB([])
-    setAnsC([])
+    setGiven(false)
+    setQuizCode('')
+    setCutOffQuiz(0)
     setStudentAnswer([])
     setQuesArray([])
     toggleModalPaper()
@@ -203,6 +311,7 @@ const ClassHome = ({ navigation }) => {
                               type='font-awesome'
                               color=''
                               onPress={() => {
+                                setQuizCode(item.Code)
                                 item.Questions.map((itemQuestion, index) => {
                                   setQuesArray((QuesArray) => [
                                     ...QuesArray,
@@ -239,15 +348,17 @@ const ClassHome = ({ navigation }) => {
                                   type='font-awesome'
                                   color=''
                                   onPress={() => {
+                                    setCutOffQuiz(item.Marks)
+                                    setQuizCode(item.Code)
+
+                                    checkQuizHandler(item.Code)
+
                                     item.Questions.map(
                                       (itemQuestion, index) => {
                                         setQuesArray((QuesArray) => [
                                           ...QuesArray,
                                           itemQuestion,
                                         ])
-                                        AnsA[index] = false
-                                        AnsB[index] = false
-                                        AnsC[index] = false
                                       }
                                     )
                                     StudentHandler()
@@ -481,8 +592,8 @@ const ClassHome = ({ navigation }) => {
                         backgroundColor='#ffffff'
                       >
                         <View style={{ paddingHorizontal: 10 }}>
-                          {Array.isArray(QuesArray) && QuesArray.length ? (
-                            <ScrollView>
+                          {Given ? (
+                            <View>
                               <Text
                                 style={{
                                   fontSize: 30,
@@ -491,211 +602,188 @@ const ClassHome = ({ navigation }) => {
                                   marginVertical: 20,
                                 }}
                               >
-                                Questions
+                                Already Submitted
                               </Text>
-                              {QuesArray.map((itemQuestion, index) => {
-                                return (
-                                  <View
+                              <View style={{ marginHorizontal: 5 }}>
+                                <Button
+                                  title='Cancel'
+                                  type='outline'
+                                  raised
+                                  onPress={() => StudentHandlerCancel()}
+                                />
+                              </View>
+                            </View>
+                          ) : (
+                            <View>
+                              {Array.isArray(QuesArray) && QuesArray.length ? (
+                                <ScrollView>
+                                  <Text
                                     style={{
-                                      backgroundColor: '#ff2e63',
-                                      borderRadius: 25,
-                                      marginBottom: 5,
+                                      fontSize: 30,
+                                      color: '#252a34',
+                                      textAlign: 'center',
+                                      marginVertical: 20,
                                     }}
                                   >
+                                    Questions
+                                  </Text>
+
+                                  {QuesArray.map((itemQuestion, index) => {
+                                    return (
+                                      <View
+                                        style={{
+                                          backgroundColor: '#ff2e63',
+                                          borderRadius: 25,
+                                          marginBottom: 5,
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 25,
+                                            color: '#ffffff',
+                                            padding: 20,
+                                          }}
+                                        >
+                                          Q{index + 1}: {itemQuestion.Question}
+                                        </Text>
+                                        <View
+                                          style={{
+                                            backgroundColor: '#252a34',
+                                            padding: 5,
+                                            borderBottomRightRadius: 25,
+                                            borderBottomLeftRadius: 25,
+                                          }}
+                                        >
+                                          <View>
+                                            <View
+                                              style={{
+                                                paddingHorizontal: 20,
+                                                paddingVertical: 5,
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  fontSize: 20,
+                                                  color: '#ffffff',
+                                                }}
+                                              >
+                                                A. {itemQuestion.OptionA}
+                                              </Text>
+                                            </View>
+
+                                            <View
+                                              style={{
+                                                paddingHorizontal: 20,
+                                                paddingVertical: 5,
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  fontSize: 20,
+                                                  color: '#ffffff',
+                                                }}
+                                              >
+                                                B. {itemQuestion.OptionB}
+                                              </Text>
+                                            </View>
+                                            <View
+                                              style={{
+                                                paddingHorizontal: 20,
+                                                paddingVertical: 5,
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  fontSize: 20,
+                                                  color: '#ffffff',
+                                                }}
+                                              >
+                                                C. {itemQuestion.OptionC}
+                                              </Text>
+                                            </View>
+                                          </View>
+                                          <View
+                                            style={{
+                                              backgroundColor: '#eaeaea',
+                                              borderRadius: 25,
+                                              paddingHorizontal: 20,
+                                              paddingVertical: 5,
+                                            }}
+                                          >
+                                            <Input
+                                              leftIcon={{
+                                                type: 'font-awesome',
+                                                name: 'angle-right',
+                                                color: '#252a34',
+                                              }}
+                                              placeholder={`Answer ${
+                                                index + 1
+                                              }`}
+                                              onChangeText={(ans) => {
+                                                StudentAnswer[index] = ans
+                                              }}
+                                              value={StudentAnswer[index]}
+                                              autoFocus={false}
+                                              style={{
+                                                padding: 5,
+                                                color: '#252a34',
+                                              }}
+                                            />
+                                          </View>
+                                        </View>
+                                      </View>
+                                    )
+                                  })}
+                                </ScrollView>
+                              ) : (
+                                <View style={{ marginTop: 50 }}>
+                                  <Image
+                                    source={require('../assets/images/add.png')}
+                                    style={{ width: 380, height: 300 }}
+                                  />
+                                  <View style={{ alignItems: 'center' }}>
                                     <Text
                                       style={{
                                         fontSize: 25,
-                                        color: '#ffffff',
-                                        padding: 20,
-                                      }}
-                                    >
-                                      Q{index + 1}: {itemQuestion.Question}
-                                    </Text>
-                                    <View
-                                      style={{
-                                        backgroundColor: '#252a34',
+                                        color: '#e7e6e1',
+                                        backgroundColor: '#314e52',
+                                        borderRadius: 25,
                                         padding: 5,
-                                        borderBottomRightRadius: 25,
-                                        borderBottomLeftRadius: 25,
+                                        width: '50%',
+                                        textAlign: 'center',
                                       }}
                                     >
-                                      <View>
-                                        {AnsA[index] ? (
-                                          <TouchableOpacity
-                                            style={{
-                                              backgroundColor: '#eaeaea',
-                                              borderRadius: 25,
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#252a34',
-                                              }}
-                                            >
-                                              A. {itemQuestion.OptionA}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        ) : (
-                                          <TouchableOpacity
-                                            style={{
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                            onPress={() => {
-                                              StudentAnswer[index] = 'A'
-                                              AnsA[index] = true
-                                              AnsB[index] = false
-                                              AnsC[index] = false
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#ffffff',
-                                              }}
-                                            >
-                                              A. {itemQuestion.OptionA}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        )}
-                                        {AnsB[index] ? (
-                                          <TouchableOpacity
-                                            style={{
-                                              backgroundColor: '#eaeaea',
-                                              borderRadius: 25,
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#252a34',
-                                              }}
-                                            >
-                                              B. {itemQuestion.OptionB}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        ) : (
-                                          <TouchableOpacity
-                                            style={{
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                            onPress={() => {
-                                              StudentAnswer[index] = 'B'
-                                              AnsA[index] = false
-                                              AnsB[index] = true
-                                              AnsC[index] = false
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#ffffff',
-                                              }}
-                                            >
-                                              B. {itemQuestion.OptionB}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        )}
-                                        {AnsC[index] ? (
-                                          <TouchableOpacity
-                                            style={{
-                                              backgroundColor: '#eaeaea',
-                                              borderRadius: 25,
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#252a34',
-                                              }}
-                                            >
-                                              C. {itemQuestion.OptionC}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        ) : (
-                                          <TouchableOpacity
-                                            style={{
-                                              paddingHorizontal: 20,
-                                              paddingVertical: 5,
-                                            }}
-                                            onPress={() => {
-                                              StudentAnswer[index] = 'C'
-                                              AnsA[index] = false
-                                              AnsB[index] = false
-                                              AnsC[index] = true
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 20,
-                                                color: '#ffffff',
-                                              }}
-                                            >
-                                              C. {itemQuestion.OptionC}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        )}
-                                      </View>
-                                    </View>
+                                      No Question
+                                    </Text>
                                   </View>
-                                )
-                              })}
-                            </ScrollView>
-                          ) : (
-                            <View style={{ marginTop: 50 }}>
-                              <Image
-                                source={require('../assets/images/add.png')}
-                                style={{ width: 380, height: 300 }}
-                              />
-                              <View style={{ alignItems: 'center' }}>
-                                <Text
-                                  style={{
-                                    fontSize: 25,
-                                    color: '#e7e6e1',
-                                    backgroundColor: '#314e52',
-                                    borderRadius: 25,
-                                    padding: 5,
-                                    width: '50%',
-                                    textAlign: 'center',
-                                  }}
-                                >
-                                  No Question
-                                </Text>
+                                </View>
+                              )}
+                              <View
+                                style={{
+                                  marginTop: 10,
+                                  flexDirection: 'row',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <View style={{ marginHorizontal: 5 }}>
+                                  <Button
+                                    title='Submit'
+                                    type='outline'
+                                    raised
+                                    onPress={() => StudentHandler2()}
+                                  />
+                                </View>
+                                <View style={{ marginHorizontal: 5 }}>
+                                  <Button
+                                    title='Cancel'
+                                    type='outline'
+                                    raised
+                                    onPress={() => StudentHandlerCancel()}
+                                  />
+                                </View>
                               </View>
                             </View>
                           )}
-                          <View
-                            style={{
-                              marginTop: 10,
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <View style={{ marginHorizontal: 5 }}>
-                              <Button
-                                title='Submit'
-                                type='outline'
-                                raised
-                                onPress={() => StudentHandler2()}
-                              />
-                            </View>
-                            <View style={{ marginHorizontal: 5 }}>
-                              <Button
-                                title='Cancel'
-                                type='outline'
-                                raised
-                                onPress={() => StudentHandlerCancel()}
-                              />
-                            </View>
-                          </View>
                         </View>
                       </Modal>
                     </View>
