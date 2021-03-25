@@ -456,8 +456,6 @@ const ClassHome = ({ navigation }) => {
                       <Modal
                         isVisible={isModalVisible}
                         backgroundColor='#ffffff'
-                        onSwipeCancel={() => QuestionHandler2()}
-                        swipeDirection='down'
                       >
                         <View style={{ paddingHorizontal: 10 }}>
                           {Array.isArray(QuesArray) && QuesArray.length ? (
@@ -640,14 +638,32 @@ const ClassHome = ({ navigation }) => {
                               </View>
                             </View>
                           )}
-                          <View style={{ marginHorizontal: 5 }}>
+                          <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Close '
+                                type='outline'
+                                raised
+                                onPress={() => QuestionHandler2()}
+                              />
+                            </View>
+                            <View style={{ marginHorizontal: 5 }}>
+                              <Button
+                                title='Stop & Remove Quiz'
+                                type='outline'
+                                raised
+                                onPress={() => QuizRemoveHandler(QuizCode)}
+                              />
+                            </View>
+                          </View>
+                          {/* <View style={{ marginHorizontal: 5 }}>
                             <Button
                               title='Stop & Remove Quiz'
                               type='outline'
                               raised
                               onPress={() => QuizRemoveHandler(QuizCode)}
                             />
-                          </View>
+                          </View> */}
                         </View>
                       </Modal>
                       <Modal
@@ -731,7 +747,7 @@ const ClassHome = ({ navigation }) => {
                             </View>
                             <View style={{ marginHorizontal: 5 }}>
                               <Button
-                                title='Download Attendance'
+                                title='Send Attendance'
                                 type='outline'
                                 raised
                                 onPress={() => DownloadAttendance()}
