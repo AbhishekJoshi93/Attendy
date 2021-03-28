@@ -245,6 +245,17 @@ const ClassHome = ({ navigation }) => {
             Score: x,
           }),
         })
+      firebase
+        .firestore()
+        .collection('students')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('Classes')
+        .doc(ClassId)
+        .update({
+          AttendanceDone: firebase.firestore.FieldValue.arrayUnion({
+            QuizId: QuizId,
+          }),
+        })
     } else {
       firebase
         .firestore()
@@ -258,6 +269,17 @@ const ClassHome = ({ navigation }) => {
             Email: `${loginUser.email}`,
             Id: firebase.auth().currentUser.uid,
             Score: x,
+          }),
+        })
+      firebase
+        .firestore()
+        .collection('students')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('Classes')
+        .doc(ClassId)
+        .update({
+          AttendanceAbsent: firebase.firestore.FieldValue.arrayUnion({
+            QuizId: QuizId,
           }),
         })
     }
@@ -638,10 +660,15 @@ const ClassHome = ({ navigation }) => {
                               </View>
                             </View>
                           )}
-                          <View style={{ flex: 1, flexDirection: 'row' }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                            }}
+                          >
                             <View style={{ marginHorizontal: 5 }}>
                               <Button
-                                title='Close '
+                                title='Close Questions'
                                 type='outline'
                                 raised
                                 onPress={() => QuestionHandler2()}

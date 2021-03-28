@@ -62,12 +62,6 @@ const JoinScreen = ({ navigation }) => {
           Des,
           Code,
         })
-        .then((result) => {
-          console.log('====================================')
-          console.log(Title)
-          console.log(Des)
-          console.log('====================================')
-        })
         .catch((error) => {
           Alert.alert('Class cannot join')
           return
@@ -83,12 +77,25 @@ const JoinScreen = ({ navigation }) => {
           }),
         })
         .then((result) => {
-          Alert.alert(`Class ${Title} joined`)
-          setTitle('')
-          setDes('')
-          setCode('')
-          setId('')
-          navigation.navigate('Home')
+          firebase
+            .firestore()
+            .collection('students')
+            .doc(firebase.auth().currentUser.uid)
+            .collection('Classes')
+            .doc(Id)
+            .set({
+              ClassTitle: Title,
+              ClassDes: Des,
+              ClassCode: Code,
+            })
+            .then((res) => {
+              Alert.alert(`Class ${Title} joined`)
+              setTitle('')
+              setDes('')
+              setCode('')
+              setId('')
+              navigation.navigate('Home')
+            })
         })
         .catch((error) => {
           Alert.alert('Class cannot join')

@@ -20,6 +20,10 @@ import firebase from 'firebase'
 import 'firebase/firestore'
 import { ActivityIndicator } from 'react-native'
 
+import MapView, { Callout, Circle, Marker } from 'react-native-maps'
+import Geocoder from 'react-native-geocoder'
+import { log } from 'react-native-reanimated'
+
 const ClassQuiz = ({ navigation }) => {
   const dispatch = useDispatch()
 
@@ -31,9 +35,7 @@ const ClassQuiz = ({ navigation }) => {
 
   const [Title, setTitle] = useState('')
   const [Marks, setMarks] = useState(0)
-  // const [Code, setCode] = useState(
-  //   `${loginClass.Code}-${(+new Date()).toString(36).slice(-5)}`
-  // )
+
   const [DateTime, setDateTime] = useState(new Date())
 
   const [isModalVisible, setModalVisible] = useState(false)
@@ -55,6 +57,15 @@ const ClassQuiz = ({ navigation }) => {
   const [ClassId, setClassId] = useState('')
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+
+  const [isMapVisible, setMapVisible] = useState(false)
+
+  const [reg, setReg] = useState({
+    latitude: 22.310696,
+    longitude: 73.192635,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  })
 
   const showDatePicker = () => {
     setDatePickerVisibility(true)
@@ -92,6 +103,22 @@ const ClassQuiz = ({ navigation }) => {
 
   if (loginClass == undefined) {
     return <ActivityIndicator size='large' color='#000000' />
+  }
+
+  const toggleMapModal = () => {
+    setMapVisible(!isMapVisible)
+  }
+
+  const LocationHandler = () => {
+    toggleMapModal()
+  }
+
+  const CloseLocationHandler = () => {
+    toggleMapModal()
+  }
+
+  const SelectLocationHandler = () => {
+    toggleMapModal()
   }
 
   const createQuizHandler = () => {
@@ -146,6 +173,19 @@ const ClassQuiz = ({ navigation }) => {
                   })
                 x++
               }
+
+              firebase
+                .firestore()
+                .collection('teachers')
+                .doc(firebase.auth().currentUser.uid)
+                .collection('Classes')
+                .doc(ClassId)
+                .update({
+                  TotalQuiz: firebase.firestore.FieldValue.arrayUnion({
+                    QuizId: result.id,
+                  }),
+                })
+
               Alert.alert('Quiz Created')
               resetStateHandler()
               navigation.navigate('Class Home')
@@ -267,9 +307,9 @@ const ClassQuiz = ({ navigation }) => {
             </View>
             <View style={{ paddingHorizontal: 2 }}>
               <Button
-                title='Create Quiz'
+                title='Select Location'
                 type='outline'
-                onPress={() => createQuizHandler()}
+                onPress={() => LocationHandler()}
               />
             </View>
           </View>
@@ -428,6 +468,67 @@ const ClassQuiz = ({ navigation }) => {
             </View>
           )}
 
+          <Modal isVisible={isMapVisible} backgroundColor='#ffffff'>
+            <Text
+              style={{
+                fontSize: 30,
+                color: '#252a34',
+                textAlign: 'center',
+                marginTop: 20,
+              }}
+            >
+              Google Map
+            </Text>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <MapView
+                initialRegion={{
+                  reg,
+                }}
+                style={{ height: '90%', width: '90%' }}
+                onRegionChange={(region) => {
+                  setReg(region)
+                }}
+              >
+                <Marker.Animated
+                  coordinate={{
+                    latitude: reg.latitude,
+                    longitude: reg.longitude,
+                  }}
+                />
+              </MapView>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginBottom: 20,
+              }}
+            >
+              <View style={{ marginHorizontal: 5 }}>
+                <Button
+                  title='Close Location'
+                  type='outline'
+                  raised
+                  onPress={() => CloseLocationHandler()}
+                />
+              </View>
+              <View style={{ marginHorizontal: 5 }}>
+                <Button
+                  title='Select Location'
+                  type='outline'
+                  raised
+                  onPress={() => SelectLocationHandler()}
+                />
+              </View>
+            </View>
+          </Modal>
+
           <Modal isVisible={isModalVisible} backgroundColor='#ffffff'>
             <View
               style={{
@@ -493,6 +594,13 @@ const ClassQuiz = ({ navigation }) => {
           <Icon raised name='lock' type='font-awesome' color='#252a34' />
         </View>
       )}
+      <View style={{ marginHorizontal: 40, marginBottom: 20 }}>
+        <Button
+          title='Create Quiz'
+          type='outline'
+          onPress={() => createQuizHandler()}
+        />
+      </View>
     </ScrollView>
   )
 }
