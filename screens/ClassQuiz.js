@@ -305,11 +305,18 @@ const ClassQuiz = ({ navigation }) => {
                 onPress={() => createQuestion()}
               />
             </View>
-            <View style={{ paddingHorizontal: 2 }}>
+            {/* <View style={{ paddingHorizontal: 2 }}>
               <Button
                 title='Select Location'
                 type='outline'
                 onPress={() => LocationHandler()}
+              />
+            </View> */}
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                title='Create Quiz'
+                type='outline'
+                onPress={() => createQuizHandler()}
               />
             </View>
           </View>
@@ -594,13 +601,6 @@ const ClassQuiz = ({ navigation }) => {
           <Icon raised name='lock' type='font-awesome' color='#252a34' />
         </View>
       )}
-      <View style={{ marginHorizontal: 40, marginBottom: 20 }}>
-        <Button
-          title='Create Quiz'
-          type='outline'
-          onPress={() => createQuizHandler()}
-        />
-      </View>
     </ScrollView>
   )
 }

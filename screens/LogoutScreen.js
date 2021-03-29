@@ -5,6 +5,9 @@ import { useDispatch } from 'react-redux'
 
 import { Icon } from 'react-native-elements'
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+
 import { logoutUser } from '../redux/actions/userActions'
 import Header from './HeaderComponent'
 
@@ -12,7 +15,7 @@ const LogoutScreen = ({ navigation }) => {
   const dispatch = useDispatch()
 
   const logoutHandler = () => {
-    dispatch(logoutUser())
+    firebase.auth().signOut()
     navigation.navigate('Login')
   }
 

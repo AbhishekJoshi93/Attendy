@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import Header2 from './Header2Component'
@@ -13,6 +13,7 @@ import { Text } from 'react-native'
 import { FlatList } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import { Input } from 'react-native-elements'
+import { RefreshControl } from 'react-native'
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -21,12 +22,15 @@ const ProfileScreen = ({ navigation }) => {
   const { loginUser } = currentUser
 
   const [Data, setData] = useState([])
+  const [Refresh, setRefresh] = useState(false)
 
   useEffect(() => {
-    setData([])
-
     dispatch(fetchUser())
+    refreshHandler()
+  }, [dispatch])
 
+  const refreshHandler = () => {
+    setData([])
     if (loginUser.person == 'Teacher') {
       firebase
         .firestore()
@@ -38,6 +42,7 @@ const ProfileScreen = ({ navigation }) => {
           result.forEach((doc) => {
             setData((Data) => [...Data, doc.data()])
           })
+          setRefresh(false)
         })
     } else if (loginUser.person == 'Student') {
       firebase
@@ -50,9 +55,10 @@ const ProfileScreen = ({ navigation }) => {
           result.forEach((doc) => {
             setData((Data) => [...Data, doc.data()])
           })
+          setRefresh(false)
         })
     }
-  }, [dispatch])
+  }
 
   if (loginUser == undefined && Data == []) {
     return <ActivityIndicator size='large' color='#000000' />
@@ -61,7 +67,14 @@ const ProfileScreen = ({ navigation }) => {
       <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
         <Header2 greeting='Profile' />
         {Array.isArray(Data) && Data.length ? (
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={Refresh}
+                onRefresh={() => refreshHandler()}
+              />
+            }
+          >
             <View style={styles.heading}>
               <Text style={{ fontSize: 27, color: '#252a34' }}>
                 Personal Information
