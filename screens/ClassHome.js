@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import {
+  ActivityIndicator,
+  StyleSheet,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native'
 import { View, Text } from 'react-native'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchClassCode } from '../redux/actions/classActions'
 import { fetchUser } from '../redux/actions/userActions'
+
+// import Geolocation from '@react-native-community/geolocation'
+import Geolocation from 'react-native-geolocation-service'
 
 import firebase from 'firebase'
 import 'firebase/firestore'
@@ -49,9 +57,33 @@ const ClassHome = ({ navigation }) => {
 
   const [StudentAttendance, setStudentAttendance] = useState([])
 
+  const [currentLongitude, setCurrentLongitude] = useState('...')
+  const [currentLatitude, setCurrentLatitude] = useState('...')
+
+  const [currentLongitude2, setCurrentLongitude2] = useState('...')
+  const [currentLatitude2, setCurrentLatitude2] = useState('...')
+
+  const [locationStatus, setLocationStatus] = useState(false)
+
   useEffect(() => {
     dispatch(fetchUser())
     refreshHandler()
+
+    const requestLocationPermission = async () => {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        )
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setLocationStatus(true)
+        } else {
+          setLocationStatus(false)
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+    requestLocationPermission()
   }, [dispatch, loginClass])
 
   const toggleModal = () => {
@@ -64,6 +96,64 @@ const ClassHome = ({ navigation }) => {
 
   const toggleModalPaper = () => {
     setisModalVisiblePaper(!isModalVisiblePaper)
+  }
+
+  const SetLocationHandler = (Code) => {
+    if (locationStatus) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocationStatus('Location Recorded')
+
+          const currentLongitude = JSON.stringify(position.coords.longitude)
+
+          const currentLatitude = JSON.stringify(position.coords.latitude)
+
+          setCurrentLongitude(currentLongitude)
+
+          setCurrentLatitude(currentLatitude)
+        },
+        (error) => {
+          setLocationStatus(error.message)
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 30000,
+          maximumAge: 1000,
+        }
+      )
+
+      if (currentLatitude != '...' && currentLongitude != '...') {
+        firebase
+          .firestore()
+          .collection('classes')
+          .doc(ClassId)
+          .collection('quiz')
+          .where('Code', '==', Code)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              firebase
+                .firestore()
+                .collection('classes')
+                .doc(ClassId)
+                .collection('quiz')
+                .doc(doc.id)
+                .update({
+                  quizlatitude: currentLatitude,
+                  quizlongitude: currentLongitude,
+                })
+                .then((result) => {
+                  Alert.alert('Location Updated')
+                })
+            })
+          })
+          .catch((error) => {
+            Alert.alert(error.message)
+            console.log(error.message)
+            return
+          })
+      }
+    }
   }
 
   const checkQuizHandler = (Code) => {
@@ -190,106 +280,162 @@ const ClassHome = ({ navigation }) => {
   }
 
   const StudentHandler2 = () => {
-    var x = 0
+    if (locationStatus) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocationStatus('Location Recorded')
 
-    for (let i = 0; i < QuesArray.length; i++) {
-      if (QuesArray[i].Answer === StudentAnswer[i]) {
-        x++
+          const currentLongitude = JSON.stringify(position.coords.longitude)
+
+          const currentLatitude = JSON.stringify(position.coords.latitude)
+
+          setCurrentLongitude(currentLongitude)
+
+          setCurrentLatitude(currentLatitude)
+        },
+        (error) => {
+          setLocationStatus(error.message)
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 30000,
+          maximumAge: 1000,
+        }
+      )
+
+      if (currentLatitude != '...' && currentLongitude != '...') {
+        for (let i = 0; i < QuesArray.length; i++) {
+          if (QuesArray[i].Answer === StudentAnswer[i]) {
+            x++
+          }
+        }
+        firebase
+          .firestore()
+          .collection('classes')
+          .doc(ClassId)
+          .collection('quiz')
+          .where('Code', '==', QuizCode)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              setQuizId(doc.id)
+              setCurrentLatitude2(doc.data().quizlatitude)
+              setCurrentLongitude2(doc.data().quizlongitude)
+            })
+          })
+          .catch((error) => {
+            Alert.alert('Quiz cannot found')
+            return
+          })
+
+        let radlat1 = (Math.PI * currentLatitude) / 180
+        let radlat2 = (Math.PI * currentLatitude2) / 180
+        let theta = currentLongitude - currentLongitude2
+        let radtheta = (Math.PI * theta) / 180
+        let dist =
+          Math.sin(radlat1) * Math.sin(radlat2) +
+          Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta)
+        if (dist > 1) {
+          dist = 1
+        }
+        dist = Math.acos(dist)
+        dist = (dist * 180) / Math.PI
+        dist = dist * 60 * 1.1515
+        dist = dist * 1.609344
+
+        let distance = dist
+
+        console.log('====================================')
+        console.log(distance)
+        console.log('====================================')
+
+        if (QuizId == '') {
+          return <ActivityIndicator size='large' color='#000000' />
+        }
+        if (
+          QuizId != '' &&
+          distance != '' &&
+          (distance == 0 || distance < 0.13)
+        ) {
+          firebase
+            .firestore()
+            .collection('classes')
+            .doc(ClassId)
+            .collection('quiz')
+            .doc(QuizId)
+            .update({
+              Attempt: firebase.firestore.FieldValue.arrayUnion(
+                firebase.auth().currentUser.uid
+              ),
+            })
+
+          if (x >= CutOffQuiz) {
+            firebase
+              .firestore()
+              .collection('classes')
+              .doc(ClassId)
+              .collection('quiz')
+              .doc(QuizId)
+              .update({
+                Attendance: firebase.firestore.FieldValue.arrayUnion({
+                  Name: `${loginUser.name}`,
+                  Email: `${loginUser.email}`,
+                  Id: firebase.auth().currentUser.uid,
+                  Score: x,
+                }),
+              })
+            firebase
+              .firestore()
+              .collection('students')
+              .doc(firebase.auth().currentUser.uid)
+              .collection('Classes')
+              .doc(ClassId)
+              .update({
+                AttendanceDone: firebase.firestore.FieldValue.arrayUnion({
+                  QuizId: QuizId,
+                }),
+              })
+          } else {
+            firebase
+              .firestore()
+              .collection('classes')
+              .doc(ClassId)
+              .collection('quiz')
+              .doc(QuizId)
+              .update({
+                Failed: firebase.firestore.FieldValue.arrayUnion({
+                  Name: `${loginUser.name}`,
+                  Email: `${loginUser.email}`,
+                  Id: firebase.auth().currentUser.uid,
+                  Score: x,
+                }),
+              })
+            firebase
+              .firestore()
+              .collection('students')
+              .doc(firebase.auth().currentUser.uid)
+              .collection('Classes')
+              .doc(ClassId)
+              .update({
+                AttendanceAbsent: firebase.firestore.FieldValue.arrayUnion({
+                  QuizId: QuizId,
+                }),
+              })
+          }
+        } else {
+          Alert.alert('You are not present in class')
+        }
       }
-    }
-    firebase
-      .firestore()
-      .collection('classes')
-      .doc(ClassId)
-      .collection('quiz')
-      .where('Code', '==', QuizCode)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setQuizId(doc.id)
-        })
-      })
-      .catch((error) => {
-        Alert.alert('Quiz cannot found')
-        return
-      })
-    if (QuizId == '') {
-      return <ActivityIndicator size='large' color='#000000' />
-    }
-    if (QuizId != '') {
-      firebase
-        .firestore()
-        .collection('classes')
-        .doc(ClassId)
-        .collection('quiz')
-        .doc(QuizId)
-        .update({
-          Attempt: firebase.firestore.FieldValue.arrayUnion(
-            firebase.auth().currentUser.uid
-          ),
-        })
-    }
 
-    if (x >= CutOffQuiz) {
-      firebase
-        .firestore()
-        .collection('classes')
-        .doc(ClassId)
-        .collection('quiz')
-        .doc(QuizId)
-        .update({
-          Attendance: firebase.firestore.FieldValue.arrayUnion({
-            Name: `${loginUser.name}`,
-            Email: `${loginUser.email}`,
-            Id: firebase.auth().currentUser.uid,
-            Score: x,
-          }),
-        })
-      firebase
-        .firestore()
-        .collection('students')
-        .doc(firebase.auth().currentUser.uid)
-        .collection('Classes')
-        .doc(ClassId)
-        .update({
-          AttendanceDone: firebase.firestore.FieldValue.arrayUnion({
-            QuizId: QuizId,
-          }),
-        })
-    } else {
-      firebase
-        .firestore()
-        .collection('classes')
-        .doc(ClassId)
-        .collection('quiz')
-        .doc(QuizId)
-        .update({
-          Failed: firebase.firestore.FieldValue.arrayUnion({
-            Name: `${loginUser.name}`,
-            Email: `${loginUser.email}`,
-            Id: firebase.auth().currentUser.uid,
-            Score: x,
-          }),
-        })
-      firebase
-        .firestore()
-        .collection('students')
-        .doc(firebase.auth().currentUser.uid)
-        .collection('Classes')
-        .doc(ClassId)
-        .update({
-          AttendanceAbsent: firebase.firestore.FieldValue.arrayUnion({
-            QuizId: QuizId,
-          }),
-        })
-    }
+      var x = 0
 
-    setQuizCode('')
-    setCutOffQuiz(0)
-    setStudentAnswer([])
-    setQuesArray([])
-    toggleModalPaper()
-    setGiven(false)
+      setQuizCode('')
+      setCutOffQuiz(0)
+      setStudentAnswer([])
+      setQuesArray([])
+      toggleModalPaper()
+      setGiven(false)
+    }
   }
 
   const StudentHandlerCancel = () => {
@@ -424,6 +570,13 @@ const ClassHome = ({ navigation }) => {
                               type='font-awesome'
                               color=''
                               onPress={() => AttendanceHandler(item.Code)}
+                            />
+                            <Icon
+                              raised
+                              name='map-pin'
+                              type='font-awesome'
+                              color=''
+                              onPress={() => SetLocationHandler(item.Code)}
                             />
                           </View>
                         ) : (

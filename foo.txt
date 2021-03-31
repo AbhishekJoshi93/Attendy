@@ -1,0 +1,7 @@
+Installing 1 SDK 40.0.0 compatible native module using npm.
+> npm install
+
+> grpc@1.24.2 install C:\Users\Lenovo\Desktop\Attendy\node_modules\grpc
+> node-pre-gyp install --fallback-to-build --library=static_library
+
+Failed to execute 'C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\bin\node-gyp.js configure --fallback-to-build --library=static_library --module=C:\Users\Lenovo\Desktop\Attendy\node_modules\grpc\src\node\extension_binary\node-v83-win32-x64-unknown\grpc_node.node --module_name=grpc_node --module_path=C:\Users\Lenovo\Desktop\Attendy\node_modules\grpc\src\node\extension_binary\node-v83-win32-x64-unknown --napi_version=6 --node_abi_napi=napi --napi_build_version=0 --node_napi_label=node-v83' (1)

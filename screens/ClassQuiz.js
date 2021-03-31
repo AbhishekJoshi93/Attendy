@@ -151,6 +151,8 @@ const ClassQuiz = ({ navigation }) => {
               Title,
               Marks,
               DateTime,
+              quizlatitude: 0.0,
+              quizlongitude: 0.0,
               Code: (+new Date()).toString(36).slice(-5),
             })
             .then((result) => {
