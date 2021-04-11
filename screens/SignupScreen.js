@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { View, Text, Image, StyleSheet, Alert } from 'react-native'
 
@@ -16,6 +16,11 @@ const SignupScreen = ({ navigation }) => {
   const [person, setPerson] = useState('')
   const [enable, setEnable] = useState(false)
   const [enable2, setEnable2] = useState(false)
+
+  useEffect(() => {
+    setEnable(!enable)
+    setPerson('Student')
+  }, [])
 
   const signupHandler = () => {
     firebase
