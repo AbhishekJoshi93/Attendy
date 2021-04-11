@@ -304,6 +304,7 @@ const ClassHome = ({ navigation }) => {
       )
 
       if (currentLatitude != '...' && currentLongitude != '...') {
+        let x = 0
         for (let i = 0; i < QuesArray.length; i++) {
           if (QuesArray[i].Answer === StudentAnswer[i]) {
             x++
@@ -344,10 +345,6 @@ const ClassHome = ({ navigation }) => {
         dist = dist * 1.609344
 
         let distance = dist
-
-        console.log('====================================')
-        console.log(distance)
-        console.log('====================================')
 
         if (QuizId == '') {
           return <ActivityIndicator size='large' color='#000000' />
